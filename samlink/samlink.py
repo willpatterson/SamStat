@@ -1,15 +1,8 @@
 """ """
 from collections import namedtuple, defaultdict
-from BCBio import GFF
 
-in_gff = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
-in_sam = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
-
-class ViviDict(dict):
-    """Class for nice nested Hashes"""
-    def __missing__(self, key):
-        value = self[key] = type(self)()
-        return value
+IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
+IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
 
 def split_gen(s, delims):
     start = 0

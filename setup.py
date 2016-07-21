@@ -1,5 +1,5 @@
 
-setup(name="MapSam",
+setup(name="SamLink",
       version="0.0.0",
       description="Pulls relivent data from .sam files and maps sam sequences onto a .gff file",
       license="MIT",

@@ -22,13 +22,6 @@ class RegionMap(object):
         self.rmap = self.read_gff(gff_path)
 
     @staticmethod
-    def make_subregion_template(subregion_types):
-        subregion_template = {}
-        for subregion in subregion_types:
-            subregion_template.update({subregion: []})
-        return subregion_template
-
-    @staticmethod
     def read_gff(gff_path, feature_types):
         """Reads a gff file into a region map hash"""
         region_map = {}

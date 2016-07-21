@@ -1,3 +1,5 @@
+from setuptools import setup, find_packages
+from setuptools.command.install import install
 
 setup(name="SamLink",
       version="0.0.0",

@@ -13,7 +13,9 @@ def split_gen(s, delims):
     yield s[start:]
 
 class RegionMap(object):
-
+    """Reads creates a feature location map from a gff file that can be
+    used to determine gene attribute types from sequence location ranges
+    """
     Region = namedtuple('Region', ['name', 'subregions', 'start', 'end'])
     def __init__(self, gff_path, accepted_features=('exon')):
         self.subregion_types = subregion_types
@@ -28,6 +30,7 @@ class RegionMap(object):
 
     @staticmethod
     def read_gff(gff_path, feature_types):
+        """Reads a gff file into a region map hash"""
         region_map = {}
         with open(in_gff, 'r') as gff:
             for line in gff:

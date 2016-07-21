@@ -1,0 +1,10 @@
+.env/
+*.swp
+SamLink.egg-info/
+build/
+dist/
+test/
+.DS_Store
+__pycache__/
+
+htdocs/static/img/*

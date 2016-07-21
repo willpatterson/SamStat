@@ -1,8 +1,6 @@
 """ """
 from collections import namedtuple, defaultdict
 
-IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
-IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
 
 def split_gen(s, delims):
     start = 0
@@ -25,19 +23,30 @@ class RegionMap(object):
     def read_gff(gff_path, feature_types):
         """Reads a gff file into a region map hash"""
         region_map = {}
-        with open(in_gff, 'r') as gff:
+        feature_template = {key: [] for key in feature_types}
+        print(feature_template)
+        with open(gff_path, 'r') as gff:
             for line in gff:
                 if line.startswith('#'):
-                    pass
+                    continue
                 line_gen = split_gen(line, '\t')
+                #print([x for x in line_gen])
                 region_name = line_gen.__next__()
                 line_gen.__next__()
                 feature = line_gen.__next__()
                 if feature == 'region':
-                    region_map.setdefault(region_name, Region(region_name, {key: [] for key in feature_types}, line_gen.__next__(), line_gen.__next__()))
-                    region_map[region_name].feature_types.append((line_gen.__next__(), line_gen.__next__()))
+
+                    region_map.setdefault(region_name, RegionMap.Region(region_name, feature_template, line_gen.__next__(), line_gen.__next__()))
                 if feature in feature_types:
-                    try:
-                        region_map[region_name].feature_types.append((line_gen.__next__(), line_gen.__next__()))
-                    except: #TODO
-                        print('warning') #TODO
+                    #try:
+                    region_map[region_name].subregions[feature].append([int(line_gen.__next__()), int(line_gen.__next__())]) #except: #TODO
+                    #print('warning') #TODO
+
+        return region_map
+
+IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
+IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
+
+if __name__ == '__main__':
+    print(RegionMap.read_gff(IN_GFF, ['exon']))
+

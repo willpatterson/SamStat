@@ -1,4 +1,5 @@
 """ """
+import warnings
 from collections import namedtuple, defaultdict
 
 
@@ -24,41 +25,42 @@ class RegionMap(object):
         """Reads a gff file into a region map hash"""
         region_map = {}
         feature_temp = {key: [] for key in feature_types}
-        print(feature_temp)
         with open(gff_path, 'r') as gff:
             for count, line in enumerate(gff):
                 try:
-                    if line.startswith('#'):
-                        print('# line: {}'.format(count))
+                    if line.startswith('#') or line is '':
                         continue
-                    line_gen = split_gen(line, '\t').next
+                    #line_gen_test = [x for x in split_gen(line, '\t')]
+                    line_gen = split_gen(line, '\t ')
                     #print([x for x in line_gen])
-                    region_name = line_gen()
-                    line_gen()
-                    feature = line_gen()
+                    region_name = next(line_gen)
+                    next(line_gen)
+                    feature = next(line_gen)
                     if feature == 'region':
                         region_map.setdefault(region_name,
                                               cls.Region(region_name,
                                                          feature_temp,
-                                                         int(line_gen()),
-                                                         int(line_gen())))
+                                                         int(next(line_gen)),
+                                                         int(next(line_gen))))
                     elif feature in feature_types:
                         try:
                             region_map[region_name].subregions[feature]\
-                                                   .append([int(line_gen()),
-                                                            int(line_gen())])
-                        except Exception as e: #TODO
-                            print('inner try: line {} count {}'.format(line,
-                                                                       count))
-                            print(e.message)
-                except Exception as e:
-                    print('outer try: line {} count {}'.format(line, count))
-                    print(e.message)
+                                                   .append([int(next(line_gen)),
+                                                            int(next(line_gen))])
+                        except KeyError as e: #TODO
+                            region_map.setdefault(region_name,
+                                                  cls.Region(region_name,
+                                                             feature_temp,
+                                                             None,
+                                                             None))
+                except StopIteration:
+                    warnings.warn('Invalid line: {} ... skipped'.format(count))
             return region_map
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
 
+
 if __name__ == '__main__':
-    RegionMap.read_gff(IN_GFF, ['exon'])
+    print(len(RegionMap.read_gff(IN_GFF, ['exon']).keys()))
 

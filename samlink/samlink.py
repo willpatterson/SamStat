@@ -1,4 +1,5 @@
 """ """
+import pysam
 import warnings
 import timeit
 from collections import namedtuple, defaultdict
@@ -40,7 +41,6 @@ class RegionMap(object):
                         region_map[region].subregions[feature].append(location)
                     except KeyError as e:
                         if feature == 'region':
-                            #print('create regoin' + region)
                             region_map.setdefault(region,
                                                   cls.Region(region,
                                                              feature_temp,
@@ -60,12 +60,32 @@ class RegionMap(object):
                     warnings.warn('Invalid line: {} ... skipped'.format(count))
             return region_map
 
+def read_alignment_map(path):
+    qnames = {}
+    samfile = pysam.AlignmentFile(path, 'r')
+    for seq_line in samfile:
+        sixteens = 0
+        zeros = 0
+        if seq_line.flag == 16:
+            sixteens = 1
+            zeros = 0
+        elif seq_line.flag == 0:
+            sixteens = 0
+            zeros = 1
+        qnames.setdefault(seq_line.query_name, [0, 0, []])
+        qnames[seq_line.query_name][0] += zeros
+        qnames[seq_line.query_name][1] += sixteens
+        qnames[seq_line.query_name][2].append(seq_line.reference_id)
+
+    return qnames
+
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
 
 if __name__ == '__main__':
     start = timeit.default_timer()
-    print(len(RegionMap.read_gff(IN_GFF, ['exon']).keys()))
+    #print(len(RegionMap.read_gff(IN_GFF, ['exon']).keys()))
+    print(read_alignment_map(IN_SAM).keys())
     end = timeit.default_timer()
     print(end-start)
 

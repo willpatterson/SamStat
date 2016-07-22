@@ -1,5 +1,6 @@
 """ """
 import warnings
+import timeit
 from collections import namedtuple, defaultdict
 
 
@@ -15,7 +16,7 @@ class RegionMap(object):
     """Reads creates a feature location map from a gff file that can be
     used to determine gene attribute types from sequence location ranges
     """
-    Region = namedtuple('Region', ['name', 'subregions', 'start', 'end'])
+    Region = namedtuple('Region', ['name', 'subregions', 'length'])
     def __init__(self, gff_path, accepted_features=('exon')):
         self.subregion_types = subregion_types
         self.rmap = self.read_gff(gff_path)
@@ -28,31 +29,33 @@ class RegionMap(object):
         with open(gff_path, 'r') as gff:
             for count, line in enumerate(gff):
                 try:
-                    if line.startswith('#') or line is '':
+                    if line.startswith('#'):
                         continue
-                    #line_gen_test = [x for x in split_gen(line, '\t')]
                     line_gen = split_gen(line, '\t ')
-                    #print([x for x in line_gen])
-                    region_name = next(line_gen)
+                    region = next(line_gen)
                     next(line_gen)
                     feature = next(line_gen)
-                    if feature == 'region':
-                        region_map.setdefault(region_name,
-                                              cls.Region(region_name,
-                                                         feature_temp,
-                                                         int(next(line_gen)),
-                                                         int(next(line_gen))))
-                    elif feature in feature_types:
-                        try:
-                            region_map[region_name].subregions[feature]\
-                                                   .append([int(next(line_gen)),
-                                                            int(next(line_gen))])
-                        except KeyError as e: #TODO
-                            region_map.setdefault(region_name,
-                                                  cls.Region(region_name,
+                    location = [int(next(line_gen)), int(next(line_gen))]
+                    try:
+                        region_map[region].subregions[feature].append(location)
+                    except KeyError as e:
+                        if feature == 'region':
+                            #print('create regoin' + region)
+                            region_map.setdefault(region,
+                                                  cls.Region(region,
                                                              feature_temp,
-                                                             None,
+                                                             location[1]))
+                        else:
+                            region_map.setdefault(region,
+                                                  cls.Region(region,
+                                                             feature_temp,
                                                              None))
+                            try:
+                                region_map[region].subregions[feature]\
+                                                  .append(location)
+                            except KeyError:
+                                pass
+
                 except StopIteration:
                     warnings.warn('Invalid line: {} ... skipped'.format(count))
             return region_map
@@ -60,7 +63,9 @@ class RegionMap(object):
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
 
-
 if __name__ == '__main__':
+    start = timeit.default_timer()
     print(len(RegionMap.read_gff(IN_GFF, ['exon']).keys()))
+    end = timeit.default_timer()
+    print(end-start)
 

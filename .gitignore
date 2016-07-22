@@ -7,4 +7,5 @@ test/
 .DS_Store
 __pycache__/
 
-htdocs/static/img/*
+test.txt
+

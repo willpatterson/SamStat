@@ -7,5 +7,5 @@ setup(name="SamLink",
       license="MIT",
       author="William Patterson, Amie Romney",
       packages=find_packages(),
-      install_requires=["BioPython"])
+      install_requires=["BioPython", 'pysam'])
 

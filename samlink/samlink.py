@@ -35,13 +35,11 @@ class RegionMap(object):
                 line_gen.__next__()
                 feature = line_gen.__next__()
                 if feature == 'region':
-
                     region_map.setdefault(region_name, RegionMap.Region(region_name, feature_template, line_gen.__next__(), line_gen.__next__()))
-                if feature in feature_types:
+                elif feature in feature_types:
                     #try:
                     region_map[region_name].subregions[feature].append([int(line_gen.__next__()), int(line_gen.__next__())]) #except: #TODO
                     #print('warning') #TODO
-
         return region_map
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'

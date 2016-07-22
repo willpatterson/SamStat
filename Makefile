@@ -1,4 +1,4 @@
-.PHONY: run install clean test init
+.PHONY: run clean-all test init
 
 VENV_DIR ?= .env
 PYTHON = $(VENV_DIR)/bin/python
@@ -17,7 +17,7 @@ clean:
 	find . -iname "__pycache__" -delete
 	-rm -rf SamLink.egg-info
 
-install-clean:
+clean-all:
 	-rm -rf $(VENV_DIR)
 	-rm -rf SamLink.egg-info
 	-rm -rf dist
@@ -33,4 +33,4 @@ $(VENV_DIR):
 	virtualenv $(VENV_DIR)
 	$(VENV_DIR)/bin/pip install --upgrade pip
 	$(VENV_DIR)/bin/pip install --upgrade setuptools
-	$(VENV_DIR)/bin/pip install -r requirements.txt
+	-$(VENV_DIR)/bin/pip install -r requirements.txt

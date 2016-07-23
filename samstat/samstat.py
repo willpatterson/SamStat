@@ -72,12 +72,47 @@ def read_alignment_map(path):
         elif seq_line.flag == 0:
             zeros = 1
             sixteens = 0
-        qnames.setdefault(seq_line.query_name, [0, 0, []])
-        qnames[seq_line.query_name][0] += zeros
-        qnames[seq_line.query_name][1] += sixteens
-        qnames[seq_line.query_name][2].append(seq_line.reference_id)
+        qnames.setdefault(seq_line.query_name, [0, 0, 0, []])
+        qnames[seq_line.query_name][0] += 1
+        qnames[seq_line.query_name][1] += zeros
+        qnames[seq_line.query_name][2] += sixteens
+        qnames[seq_line.query_name][3].append(seq_line.reference_id)
 
     return qnames
+
+OutLine = namedtuple('OutLine',
+                     ['QNAME',
+                      'alignment_number',
+                      'zeros',
+                      'sixteens',
+                      'unique_rnames_low',
+                      'unique_rnames_high',
+                      'unique_rnames_number',
+                      'gff_classification'])
+
+def calculate_statistics(qname_data, region_map):
+    """ """
+    out_lines = []
+    for qname, qdata in qname_data.items():
+        alignment_number = qdata[0]
+        zeros = qdata[1]
+        sixteens = qdata[2]
+        unique_rnames = sorted({(x, qdata[3].count(x)) for x in qdata[3]},
+                               key=itemgetter(1))
+        unique_rnames_low = unique_rnames[0]
+        unique_rnames_high = unique_rnames[-1]
+        unique_rnames_number = len(unique_rnames)
+
+        #TODO gff_classification
+        out_lines.append(OutLine(qname,
+                                 alignment_number,
+                                 zeros,
+                                 sixteens,
+                                 unique_rnames_low,
+                                 unique_rnames_high,
+                                 unique_rnames_number,
+                                 None)
+
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'

@@ -64,14 +64,14 @@ def read_alignment_map(path):
     qnames = {}
     samfile = pysam.AlignmentFile(path, 'r')
     for seq_line in samfile:
-        sixteens = 0
         zeros = 0
+        sixteens = 0
         if seq_line.flag == 16:
-            sixteens = 1
             zeros = 0
+            sixteens = 1
         elif seq_line.flag == 0:
-            sixteens = 0
             zeros = 1
+            sixteens = 0
         qnames.setdefault(seq_line.query_name, [0, 0, []])
         qnames[seq_line.query_name][0] += zeros
         qnames[seq_line.query_name][1] += sixteens

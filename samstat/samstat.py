@@ -39,7 +39,7 @@ class RegionMap(object):
                     location = [int(next(line_gen)), int(next(line_gen))]
                     try:
                         region_map[region].subregions[feature].append(location)
-                    except KeyError as e:
+                    except KeyError:
                         if feature == 'region':
                             region_map.setdefault(region,
                                                   cls.Region(region,

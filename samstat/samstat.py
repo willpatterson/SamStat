@@ -60,6 +60,10 @@ class RegionMap(object):
                     warnings.warn('Invalid line: {} ... skipped'.format(count))
             return region_map
 
+        def get_location_clasification(self, location_start, location_stop):
+            """Gets location classification from region_map"""
+            raise NotImplementedError
+
 def read_alignment_map(path):
     qnames = {}
     samfile = pysam.AlignmentFile(path, 'r')
@@ -112,6 +116,8 @@ def calculate_statistics(qname_data, region_map):
                                  unique_rnames_high,
                                  unique_rnames_number,
                                  None)
+
+    return out_lines
 
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'

@@ -2,7 +2,7 @@
 import pysam
 import warnings
 import timeit
-from collections import namedtuple, defaultdict
+from collections import namedtuple
 
 
 def split_gen(s, delims):
@@ -20,7 +20,7 @@ class RegionMap(object):
     Region = namedtuple('Region', ['name', 'subregions', 'length'])
     def __init__(self, gff_path, accepted_features=('exon')):
         self.subregion_types = subregion_types
-        self.rmap = self.read_gff(gff_path)
+        self.rmap = self.read_gff(gff_path, feature_types=('exon'))
 
     @classmethod
     def read_gff(cls, gff_path, feature_types):

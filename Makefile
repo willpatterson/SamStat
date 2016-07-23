@@ -5,7 +5,7 @@ PYTHON = $(VENV_DIR)/bin/python
 
 run:
 	clear
-	$(PYTHON) samlink/samlink.py
+	$(PYTHON) samstat/samstat.py
 
 init:
 	rm -rf $(VENV_DIR)
@@ -15,11 +15,11 @@ clean:
 	find . -iname "*.pyc" -delete
 	find . -iname "*.pyo" -delete
 	find . -iname "__pycache__" -delete
-	-rm -rf SamLink.egg-info
+	-rm -rf SameStat.egg-info
 
 clean-all:
 	-rm -rf $(VENV_DIR)
-	-rm -rf SamLink.egg-info
+	-rm -rf SamStat.egg-info
 	-rm -rf dist
 	-rm -rf build
 

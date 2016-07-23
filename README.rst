@@ -1,11 +1,11 @@
 *******
-SamLink
+SamStat
 *******
 
-SamLink is a custom application for a specific bioinformatics application 
+SamStat is a custom application for a specific bioinformatics application 
 pipeline.
 
-SamLink preforms the following operations on corrispoding .sam file and .gff 
+SamStat preforms the following operations on corrispoding .sam file and .gff 
 files:
 
 1. Number of lines per QNAME

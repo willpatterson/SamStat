@@ -115,7 +115,7 @@ def calculate_statistics(qname_data, region_map):
                                  unique_rnames_low,
                                  unique_rnames_high,
                                  unique_rnames_number,
-                                 None)
+                                 None))
 
     return out_lines
 

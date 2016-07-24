@@ -22,7 +22,7 @@ class RegionMap(object):
     """Reads creates a feature location map from a gff file that can be
     used to determine gene attribute types from sequence location ranges
     """
-    Region = namedtuple('Region', ['name', 'features', 'length'])
+    Region = namedtuple('Region', ['features', 'length'])
     def __init__(self, gff_path, accepted_features=('exon')):
         self.subregion_types = subregion_types
         self.rmap = self.read_gff(gff_path, feature_types=('exon'))
@@ -47,13 +47,11 @@ class RegionMap(object):
                     except KeyError:
                         if feature == 'region':
                             region_map.setdefault(region,
-                                                  cls.Region(region,
-                                                             feature_temp,
+                                                  cls.Region(feature_temp,
                                                              location[1]))
                         else:
                             region_map.setdefault(region,
-                                                  cls.Region(region,
-                                                             feature_temp,
+                                                  cls.Region(feature_temp,
                                                              None))
                             try:
                                 region_map[region].features[feature]\
@@ -74,7 +72,7 @@ class RegionMap(object):
                 largest = next(features)[1]
                 for feat in features:
                     if largest < sub[1]: largest = sub[1]
-                region_map[key] = cls.Region(key, region.features, largest)
+                region_map[key] = cls.Region(region.features, largest)
         return region_map
 
     def get_location_clasification(self,

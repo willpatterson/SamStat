@@ -1,4 +1,8 @@
-""" """
+"""Main file for SamStat
+Authors: Will Patterson, Amie Romney
+
+Description: TODO
+"""
 import pysam
 import warnings
 import timeit
@@ -6,6 +10,7 @@ from collections import namedtuple
 
 
 def split_gen(s, delims):
+    """iterates a delimited line"""
     start = 0
     for i, c in enumerate(s):
         if c in delims:
@@ -65,6 +70,7 @@ class RegionMap(object):
             raise NotImplementedError
 
 def read_alignment_map(path):
+    """Reads Alignment map SAM/BAM file into dictionary"""
     qnames = {}
     samfile = pysam.AlignmentFile(path, 'r')
     for seq_line in samfile:
@@ -95,7 +101,7 @@ OutLine = namedtuple('OutLine',
                       'gff_classification'])
 
 def calculate_statistics(qname_data, region_map):
-    """ """
+    """Calculates statistics using SAM and GFF data"""
     out_lines = []
     for qname, qdata in qname_data.items():
         alignment_number = qdata[0]

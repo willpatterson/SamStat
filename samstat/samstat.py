@@ -63,11 +63,26 @@ class RegionMap(object):
 
                 except StopIteration:
                     warnings.warn('Invalid line: {} ... skipped'.format(count))
-            return region_map
+        return cls.calc_missing_region_lengths(region_map)
 
-        def get_location_clasification(self, location_start, location_stop):
-            """Gets location classification from region_map"""
-            raise NotImplementedError
+    @classmethod
+    def calc_missing_region_lengths(cls, region_map):
+        """Calculates region lengths for regions without a region line"""
+        for key, region in region_map.items():
+            if region.length is None:
+                subregions = iter(region.subregions)
+                largest = next(subregions)[1]
+                for sub in subregions:
+                    if largest < sub[1]: largest = sub[1]
+                region_map[key] = cls.Region(key, region.subregions, largest)
+        return region_map
+
+    def get_location_clasification(self,
+                                   region_name,
+                                   location_start,
+                                   location_stop):
+        """Gets location classification from region_map"""
+        raise NotImplementedError
 
 def read_alignment_map(path):
     """Reads Alignment map SAM/BAM file into dictionary"""

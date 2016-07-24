@@ -24,8 +24,8 @@ class RegionMap(object):
     """
     Region = namedtuple('Region', ['features', 'length'])
     def __init__(self, gff_path, accepted_features=('exon')):
-        self.subregion_types = subregion_types
-        self.rmap = self.read_gff(gff_path, feature_types=('exon'))
+        self.feature_types = accepted_features
+        self.rmap = self.read_gff(gff_path, feature_types=self.feature_types)
 
     @classmethod
     def read_gff(cls, gff_path, feature_types):

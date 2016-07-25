@@ -7,6 +7,7 @@ import pysam
 import warnings
 import timeit
 from collections import namedtuple
+from functools import lru_cache
 
 
 def split_gen(s, delims):
@@ -71,10 +72,11 @@ class RegionMap(object):
                 features = iter(region.features)
                 largest = next(features)[1]
                 for feat in features:
-                    if largest < sub[1]: largest = sub[1]
+                    if largest < feat[1]: largest = feat[1]
                 region_map[key] = cls.Region(region.features, largest)
         return region_map
 
+    @lru_cache(maxsize=None)
     def get_location_clasification(self,
                                    region_name,
                                    location_start,
@@ -137,7 +139,6 @@ def calculate_statistics(qname_data, region_map):
                                  None))
 
     return out_lines
-
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'

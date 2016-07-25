@@ -82,7 +82,20 @@ class RegionMap(object):
                                    location_start,
                                    location_stop):
         """Gets location classification from region_map"""
-        raise NotImplementedError
+        try:
+            for key, ranges self.region_map[region_name].features.items():
+                for feat_range in ranges:
+                    start_flag = location_start in range(feat_range[0],
+                                                         feat_range[1])
+                    stop_flag = location_stop in range(feat_range[0],
+                                                       feat_range[1])
+
+                    if stop_flag is True and start_flag is True:
+                        return key
+                    elif stop_flag =! start_flag:
+                        return 'combo'
+                    else:
+                        return 'intron'
 
 def read_alignment_map(path):
     """Reads Alignment map SAM/BAM file into dictionary"""

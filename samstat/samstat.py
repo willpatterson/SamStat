@@ -8,6 +8,7 @@ import warnings
 import timeit
 from collections import namedtuple
 from functools import lru_cache
+from operator import itemgetter
 
 
 def split_gen(s, delims):
@@ -24,8 +25,11 @@ class RegionMap(object):
     used to determine gene attribute types from sequence location ranges
     """
     Region = namedtuple('Region', ['features', 'length'])
-    def __init__(self, gff_path, accepted_features=('exon')):
+    def __init__(self, gff_path, accepted_features='exon'):
+        if isinstance(accepted_features, str):
+            accepted_features = tuple([accepted_features])
         self.feature_types = accepted_features
+        print(accepted_features)
         self.rmap = self.read_gff(gff_path, feature_types=self.feature_types)
 
     @classmethod
@@ -70,7 +74,7 @@ class RegionMap(object):
         for key, region in region_map.items():
             if region.length is None:
                 features = iter(region.features)
-                largest = next(features)[1] #TODO Error
+                largest = next(features)[1] 
                 for feat in features:
                     if largest < feat[1]: largest = feat[1]
                 region_map[key] = cls.Region(region.features, largest)

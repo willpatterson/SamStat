@@ -146,7 +146,7 @@ def calculate_statistics(qname_data, region_map):
         alignment_number = qdata[0]
         zeros = qdata[1]
         sixteens = qdata[2]
-        unique_rnames = sorted({(x, qdata[3].count(x)) for x in qdata[3]},
+        unique_rnames = sorted({(x, qdata.rname_positions.count(x)) for x in 3]},
                                key=itemgetter(1))
         unique_rnames_low = unique_rnames[0]
         unique_rnames_high = unique_rnames[-1]
@@ -173,13 +173,13 @@ if __name__ == '__main__':
     start = timeit.default_timer()
 
     # Current:
-    [print(x) for x in read_alignment_map(IN_SAM).items()]
 
     """ OLD:
+    [print(x) for x in read_alignment_map(IN_SAM).items()]
     read_alignment_map(IN_SAM)
     print(len(RegionMap.read_gff(IN_GFF, ['exon']).keys()))
     print(read_alignment_map(IN_SAM).keys())
     """
 
     end = timeit.default_timer()
-    print(end-start)
+    print('Total Program Time: {}'.format(end-start))

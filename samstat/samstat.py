@@ -70,7 +70,7 @@ class RegionMap(object):
         for key, region in region_map.items():
             if region.length is None:
                 features = iter(region.features)
-                largest = next(features)[1]
+                largest = next(features)[1] #TODO Error
                 for feat in features:
                     if largest < feat[1]: largest = feat[1]
                 region_map[key] = cls.Region(region.features, largest)
@@ -143,10 +143,11 @@ def calculate_statistics(qname_data, region_map):
     """Calculates statistics using SAM and GFF data"""
     out_lines = []
     for qname, qdata in qname_data.items():
-        alignment_number = qdata[0]
-        zeros = qdata[1]
-        sixteens = qdata[2]
-        unique_rnames = sorted({(x, qdata.rname_positions.count(x)) for x in 3]},
+        alignment_number = qdata.alignment_number[0]
+        zeros = qdata.zeros[0]
+        sixteens = qdata.sixteens[0]
+        unique_rnames = sorted({(x[1], qdata.rname_positions.count(x))\
+                                for x in qdata.rname_positions},
                                key=itemgetter(1))
         unique_rnames_low = unique_rnames[0]
         unique_rnames_high = unique_rnames[-1]
@@ -173,6 +174,10 @@ if __name__ == '__main__':
     start = timeit.default_timer()
 
     # Current:
+
+    sam_data = read_alignment_map(IN_SAM)
+    region_map = RegionMap(IN_GFF)
+    calculate_statistics(sam_data, region_map)
 
     """ OLD:
     [print(x) for x in read_alignment_map(IN_SAM).items()]

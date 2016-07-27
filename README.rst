@@ -2,8 +2,7 @@
 SamStat
 *******
 
-SamStat is a custom application for a specific bioinformatics application 
-pipeline.
+SamStat is a custom script used in a bioinformatics pipeline.
 
 SamStat preforms the following operations on corrispoding .sam file and .gff 
 files:

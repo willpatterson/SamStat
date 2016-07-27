@@ -82,26 +82,32 @@ class RegionMap(object):
                                    location_start,
                                    location_stop):
         """Gets location classification from region_map"""
-        try:
-            for key, ranges self.region_map[region_name].features.items():
-                for feat_range in ranges:
-                    start_flag = location_start in range(feat_range[0],
-                                                         feat_range[1])
-                    stop_flag = location_stop in range(feat_range[0],
-                                                       feat_range[1])
+        for key, ranges in self.region_map[region_name].features.items():
+            for feat_range in ranges:
+                start_flag = location_start in range(feat_range[0],
+                                                     feat_range[1])
+                stop_flag = location_stop in range(feat_range[0],
+                                                   feat_range[1])
 
-                    if stop_flag is True and start_flag is True:
-                        return key
-                    elif stop_flag =! start_flag:
-                        return 'combo'
-                    else:
-                        return 'intron'
+                if stop_flag is True and start_flag is True:
+                    return key
+                elif stop_flag != start_flag:
+                    return 'combo'
+                else:
+                    return 'intron'
+
+SamIn = namedtuple('InLine',
+                   ['alignment_number',
+                    'zeros',
+                    'sixteens',
+                    'cigar',
+                    'rname_positions'])
 
 def read_alignment_map(path):
     """Reads Alignment map SAM/BAM file into dictionary"""
     qnames = {}
     samfile = pysam.AlignmentFile(path, 'r')
-    for seq_line in samfile:
+    for count, seq_line in enumerate(samfile):
         zeros = 0
         sixteens = 0
         if seq_line.flag == 16:
@@ -110,11 +116,16 @@ def read_alignment_map(path):
         elif seq_line.flag == 0:
             zeros = 1
             sixteens = 0
-        qnames.setdefault(seq_line.query_name, [0, 0, 0, []])
-        qnames[seq_line.query_name][0] += 1
-        qnames[seq_line.query_name][1] += zeros
-        qnames[seq_line.query_name][2] += sixteens
-        qnames[seq_line.query_name][3].append(seq_line.reference_id)
+        qname = seq_line.query_name
+        qnames.setdefault(qname, SamIn([0], [0], [0], seq_line.cigar, []))
+        qnames[qname].alignment_number[0] += 1
+        qnames[qname].zeros[0] += zeros
+        qnames[qname].sixteens[0] += sixteens
+        try:
+            qnames[qname].rname_positions.append((seq_line.reference_name,
+                                                  seq_line.reference_start))
+        except ValueError:
+            warnings.warn('Reference Name is -1, Line #: {}'.format(count))
 
     return qnames
 
@@ -153,13 +164,22 @@ def calculate_statistics(qname_data, region_map):
 
     return out_lines
 
+
+
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
 
 if __name__ == '__main__':
     start = timeit.default_timer()
-    #print(len(RegionMap.read_gff(IN_GFF, ['exon']).keys()))
+
+    # Current:
+    [print(x) for x in read_alignment_map(IN_SAM).items()]
+
+    """ OLD:
+    read_alignment_map(IN_SAM)
+    print(len(RegionMap.read_gff(IN_GFF, ['exon']).keys()))
     print(read_alignment_map(IN_SAM).keys())
+    """
+
     end = timeit.default_timer()
     print(end-start)
-

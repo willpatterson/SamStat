@@ -179,6 +179,7 @@ def calculate_statistics(qname_data, region_map):
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
+OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamSat_output.v1.csv'
 
 if __name__ == '__main__':
     start = timeit.default_timer()
@@ -190,6 +191,9 @@ if __name__ == '__main__':
     outlines = calculate_statistics(sam_data, region_map)
     print(len(outlines))
     print(outlines[0])
+    #outlines = ['{qn}\t{z}\t{sixt}\t{
+    with open(OUT_CSV, 'w') as ofile:
+        ofile.write('\n'.join(outlines))
 
 
     """ OLD:

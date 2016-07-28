@@ -74,7 +74,7 @@ class RegionMap(object):
         for key, region in region_map.items():
             if region.length is None:
                 features = iter(region.features)
-                largest = next(features)[1] 
+                largest = next(features)[1]
                 for feat in features:
                     if largest < feat[1]: largest = feat[1]
                 region_map[key] = cls.Region(region.features, largest)
@@ -86,7 +86,7 @@ class RegionMap(object):
                                    location_start,
                                    location_stop):
         """Gets location classification from region_map"""
-        for key, ranges in self.region_map[region_name].features.items():
+        for key, ranges in self.rmap[region_name].features.items():
             for feat_range in ranges:
                 start_flag = location_start in range(feat_range[0],
                                                      feat_range[1])
@@ -150,12 +150,18 @@ def calculate_statistics(qname_data, region_map):
         alignment_number = qdata.alignment_number[0]
         zeros = qdata.zeros[0]
         sixteens = qdata.sixteens[0]
-        unique_rnames = sorted({(x[1], qdata.rname_positions.count(x))\
-                                for x in qdata.rname_positions},
-                               key=itemgetter(1))
-        unique_rnames_low = unique_rnames[0]
-        unique_rnames_high = unique_rnames[-1]
-        unique_rnames_number = len(unique_rnames)
+        try:
+            unique_rnames = sorted({(x[1], qdata.rname_positions.count(x))\
+                                    for x in qdata.rname_positions},
+                                   key=itemgetter(1))
+            unique_rnames_low = unique_rnames[0]
+            unique_rnames_high = unique_rnames[-1]
+            unique_rnames_number = len(unique_rnames)
+        except IndexError:
+            print(qdata)
+
+        gff_classes = {region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]) for rname, location in qdata.rname_positions}
+        gff_classes = ';'.join(gff_classes)
 
         #TODO gff_classification
         out_lines.append(OutLine(qname,
@@ -165,7 +171,7 @@ def calculate_statistics(qname_data, region_map):
                                  unique_rnames_low,
                                  unique_rnames_high,
                                  unique_rnames_number,
-                                 None))
+                                 gff_classes))
 
     return out_lines
 
@@ -181,7 +187,10 @@ if __name__ == '__main__':
 
     sam_data = read_alignment_map(IN_SAM)
     region_map = RegionMap(IN_GFF)
-    calculate_statistics(sam_data, region_map)
+    outlines = calculate_statistics(sam_data, region_map)
+    print(len(outlines))
+    print(outlines[0])
+
 
     """ OLD:
     [print(x) for x in read_alignment_map(IN_SAM).items()]

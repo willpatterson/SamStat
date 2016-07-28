@@ -145,7 +145,6 @@ OutLine = namedtuple('OutLine',
 
 def calculate_statistics(qname_data, region_map):
     """Calculates statistics using SAM and GFF data"""
-    out_lines = []
     for qname, qdata in qname_data.items():
         alignment_number = qdata.alignment_number[0]
         zeros = qdata.zeros[0]
@@ -197,41 +196,16 @@ def run(in_sam, in_gff, outpath):
                      'unique_rnames_high',
                      'unique_rnames_number',
                      'gff_classification']
-    outlines = iter(calculate_statistics(sam_data, region_map))
     with open(outpath, 'w') as ofile:
         ofile.write('\n'.join([format_line_obj(oline, in_attributes, '\t') for oline in calculate_statistics(sam_data, region_map)]))
 
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
-OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamSat_output.v1.csv'
+OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v1.csv'
 
 if __name__ == '__main__':
     start = timeit.default_timer()
-
-    # Current:
     run(IN_SAM, IN_GFF, OUT_CSV)
-
-    """ OLD:
-    sam_data = read_alignment_map(IN_SAM)
-    region_map = RegionMap(IN_GFF)
-    outlines = iter(calculate_statistics(sam_data, region_map))
-    #print(len(outlin
-    in_attributes = ['qname', 'alignment_number', 'zeros', 'sixteens', 'unique_rnames_low', 'unique_rnames_high', 'unique_rnames_number', 'gff_classification']
-    print(len(in_attributes))
-    print(next(outlines))
-    for i in range(10):
-        print(format_line_obj(next(outlines), in_attributes, '\t'))
-    #outlines = ['{qn}\t{z}\t{sixt}\t{
-    #with open(OUT_CSV, 'w') as ofile:
-    #    ofile.write('\n'.join(outlines))
-
-
-    [print(x) for x in read_alignment_map(IN_SAM).items()]
-    read_alignment_map(IN_SAM)
-    print(len(RegionMap.read_gff(IN_GFF, ['exon']).keys()))
-    print(read_alignment_map(IN_SAM).keys())
-    """
-
     end = timeit.default_timer()
     print('Total Program Time: {}'.format(end-start))

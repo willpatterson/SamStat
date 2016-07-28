@@ -129,7 +129,7 @@ def read_alignment_map(path):
             qnames[qname].rname_positions.append((seq_line.reference_name,
                                                   seq_line.reference_start))
         except ValueError:
-            print(qdata)
+            warnings.warn('Reference Name is -1, Line #: {}'.format(count))
 
     return qnames
 

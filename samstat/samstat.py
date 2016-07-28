@@ -166,17 +166,14 @@ def calculate_statistics(qname_data, region_map):
         gff_classes = ';'.join(gff_classes)
 
         #TODO gff_classification
-        out_lines.append(OutLine(qname,
-                                 alignment_number,
-                                 zeros,
-                                 sixteens,
-                                 unique_rnames_low,
-                                 unique_rnames_high,
-                                 unique_rnames_number,
-                                 gff_classes))
-
-    return out_lines
-
+        yield OutLine(qname,
+                      alignment_number,
+                      zeros,
+                      sixteens,
+                      unique_rnames_low,
+                      unique_rnames_high,
+                      unique_rnames_number,
+                      gff_classes)
 
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
@@ -190,7 +187,7 @@ if __name__ == '__main__':
 
     sam_data = read_alignment_map(IN_SAM)
     region_map = RegionMap(IN_GFF)
-    outlines = calculate_statistics(sam_data, region_map)
+    outlines = [x for x in calculate_statistics(sam_data, region_map)]
     print(len(outlines))
     print(outlines[0])
     print(outlines[1])

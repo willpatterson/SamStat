@@ -134,7 +134,7 @@ def read_alignment_map(path):
     return qnames
 
 OutLine = namedtuple('OutLine',
-                     ['QNAME',
+                     ['qname',
                       'alignment_number',
                       'zeros',
                       'sixteens',
@@ -151,8 +151,8 @@ def calculate_statistics(qname_data, region_map):
         zeros = qdata.zeros[0]
         sixteens = qdata.sixteens[0]
         try:
-            unique_rnames = sorted({(x[0], qdata.rname_positions.count(x))\
-                                    for x in qdata.rname_positions},
+            raw_rnames = [x[0] for x in qdata.rname_positions]
+            unique_rnames = sorted({(x, raw_rnames.count(x)) for x in raw_rnames},
                                    key=itemgetter(1))
             unique_rnames_low = {x[0] for x in unique_rnames if x[1] == unique_rnames[0][1]}
             unique_rnames_high = {x[0] for x in unique_rnames[::-1] if x[1] == unique_rnames[-1][1]}
@@ -161,22 +161,45 @@ def calculate_statistics(qname_data, region_map):
                 unique_rnames_low = unique_rnames_high = 'All{}'.format(unique_rnames[0][1])
             else:
                 unique_rnames_low = len(unique_rnames_low)
-                unique_rnames_low = len(unique_rnames_high)
+                unique_rnames_high = len(unique_rnames_high)
+
+            gff_classes = ';'.join({region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]) for rname, location in qdata.rname_positions})
+
+            #TODO gff_classification
+            yield OutLine(qname,
+                          alignment_number,
+                          zeros,
+                          sixteens,
+                          unique_rnames_low,
+                          unique_rnames_high,
+                          unique_rnames_number,
+                          gff_classes)
+
         except IndexError:
             warnings.warn('QNAME data cannot be read, Skipping: {}'.format(qname))
 
-        gff_classes = {region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]) for rname, location in qdata.rname_positions}
-        gff_classes = ';'.join(gff_classes)
+def format_line_obj(line_obj, ordered_attributes, delimiter):
+    """Formats an object into delimited string
 
-        #TODO gff_classification
-        yield OutLine(qname,
-                      alignment_number,
-                      zeros,
-                      sixteens,
-                      unique_rnames_low,
-                      unique_rnames_high,
-                      unique_rnames_number,
-                      gff_classes)
+    If attribute not found, a ':(' will be inserted instead
+    """
+    return str(delimiter).join((str(line_obj.__dict__.get(attr, ':(')) for attr in ordered_attributes))
+
+def run(in_sam, in_gff, outpath):
+    """Runs SamStat functions"""
+    sam_data = read_alignment_map(in_sam)
+    region_map = RegionMap(in_gff)
+    in_attributes = ['qname',
+                     'alignment_number',
+                     'zeros',
+                     'sixteens',
+                     'unique_rnames_low',
+                     'unique_rnames_high',
+                     'unique_rnames_number',
+                     'gff_classification']
+    outlines = iter(calculate_statistics(sam_data, region_map))
+    with open(outpath, 'w') as ofile:
+        ofile.write('\n'.join([format_line_obj(oline, in_attributes, '\t') for oline in calculate_statistics(sam_data, region_map)]))
 
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
@@ -187,19 +210,23 @@ if __name__ == '__main__':
     start = timeit.default_timer()
 
     # Current:
+    run(IN_SAM, IN_GFF, OUT_CSV)
 
+    """ OLD:
     sam_data = read_alignment_map(IN_SAM)
     region_map = RegionMap(IN_GFF)
     outlines = iter(calculate_statistics(sam_data, region_map))
-    #print(len(outlines))
+    #print(len(outlin
+    in_attributes = ['qname', 'alignment_number', 'zeros', 'sixteens', 'unique_rnames_low', 'unique_rnames_high', 'unique_rnames_number', 'gff_classification']
+    print(len(in_attributes))
+    print(next(outlines))
     for i in range(10):
-        print(next(outlines))
+        print(format_line_obj(next(outlines), in_attributes, '\t'))
     #outlines = ['{qn}\t{z}\t{sixt}\t{
     #with open(OUT_CSV, 'w') as ofile:
     #    ofile.write('\n'.join(outlines))
 
 
-    """ OLD:
     [print(x) for x in read_alignment_map(IN_SAM).items()]
     read_alignment_map(IN_SAM)
     print(len(RegionMap.read_gff(IN_GFF, ['exon']).keys()))

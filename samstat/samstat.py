@@ -151,12 +151,14 @@ def calculate_statistics(qname_data, region_map):
         zeros = qdata.zeros[0]
         sixteens = qdata.sixteens[0]
         try:
-            unique_rnames = sorted({(x[1], qdata.rname_positions.count(x))\
+            unique_rnames = sorted({(x[0], qdata.rname_positions.count(x))\
                                     for x in qdata.rname_positions},
                                    key=itemgetter(1))
-            unique_rnames_low = unique_rnames[0]
-            unique_rnames_high = unique_rnames[-1]
+            unique_rnames_low = {x[0] for x in unique_rnames if x[1] == unique_rnames[0][1]}
+            unique_rnames_high = {x[0] for x in unique_rnames[::-1] if x[1] == unique_rnames[-1][1]}
             unique_rnames_number = len(unique_rnames)
+            if unique_rnames_low == unique_rnames_high:
+                unique_rnames_low = unique_rnames_high = 'All{}'.format(unique_rnames[0][1])
         except IndexError:
             print(qdata)
 
@@ -191,9 +193,10 @@ if __name__ == '__main__':
     outlines = calculate_statistics(sam_data, region_map)
     print(len(outlines))
     print(outlines[0])
+    print(outlines[1])
     #outlines = ['{qn}\t{z}\t{sixt}\t{
-    with open(OUT_CSV, 'w') as ofile:
-        ofile.write('\n'.join(outlines))
+    #with open(OUT_CSV, 'w') as ofile:
+    #    ofile.write('\n'.join(outlines))
 
 
     """ OLD:

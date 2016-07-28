@@ -129,7 +129,7 @@ def read_alignment_map(path):
             qnames[qname].rname_positions.append((seq_line.reference_name,
                                                   seq_line.reference_start))
         except ValueError:
-            warnings.warn('Reference Name is -1, Line #: {}'.format(count))
+            print(qdata)
 
     return qnames
 
@@ -159,8 +159,11 @@ def calculate_statistics(qname_data, region_map):
             unique_rnames_number = len(unique_rnames)
             if unique_rnames_low == unique_rnames_high:
                 unique_rnames_low = unique_rnames_high = 'All{}'.format(unique_rnames[0][1])
+            else:
+                unique_rnames_low = len(unique_rnames_low)
+                unique_rnames_low = len(unique_rnames_high)
         except IndexError:
-            print(qdata)
+            warnings.warn('QNAME data cannot be read, Skipping: {}'.format(qname))
 
         gff_classes = {region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]) for rname, location in qdata.rname_positions}
         gff_classes = ';'.join(gff_classes)
@@ -187,10 +190,10 @@ if __name__ == '__main__':
 
     sam_data = read_alignment_map(IN_SAM)
     region_map = RegionMap(IN_GFF)
-    outlines = [x for x in calculate_statistics(sam_data, region_map)]
-    print(len(outlines))
-    print(outlines[0])
-    print(outlines[1])
+    outlines = iter(calculate_statistics(sam_data, region_map))
+    #print(len(outlines))
+    for i in range(10):
+        print(next(outlines))
     #outlines = ['{qn}\t{z}\t{sixt}\t{
     #with open(OUT_CSV, 'w') as ofile:
     #    ofile.write('\n'.join(outlines))

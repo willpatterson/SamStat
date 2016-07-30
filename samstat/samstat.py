@@ -4,6 +4,7 @@ Authors: Will Patterson, Amie Romney
 Description: TODO
 """
 import argparse
+import os
 import pysam
 import warnings
 import timeit

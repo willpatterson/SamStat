@@ -3,6 +3,7 @@ Authors: Will Patterson, Amie Romney
 
 Description: TODO
 """
+import argparse
 import pysam
 import warnings
 import timeit
@@ -207,6 +208,22 @@ def run(in_sam, in_gff, outpath):
     with open(outpath, 'w') as ofile:
         ofile.write('\n'.join([format_line_obj(oline, in_attributes, '\t') for oline in calculate_statistics(sam_data, region_map)]))
 
+def main():
+    """Command line interface for samstat"""
+    parser = argparse.ArgumentParser(description="TODO")
+    parser.add_argument('sam_file', type=str, help='Path To SAM input file')
+    parser.add_argument('gff_file', type=str, help='Path to GFF input file')
+    parser.add_argument('out_path', type=str, help='Path of output file')
+    args = parser.parse_args()
+
+    if not os.path.isfile(args.sam_file):
+        raise argparse.ArgumentTypeError('sam_file is not a valid file path')
+    if not os.path.isfile(args.gff_file):
+        raise argparse.ArgumentTypeError('gff_file is not a valid file path')
+    if os.path.exists(args.out_path):
+        warnings.warn(('Warning output path already exists, data will be '
+                       'overwritten. Path {}').format(args.out_path))
+    run(args.sam_file, args.gff_file, args.out_path)
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'

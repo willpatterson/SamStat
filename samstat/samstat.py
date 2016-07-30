@@ -141,7 +141,10 @@ OutLine = namedtuple('OutLine',
                       'unique_rnames_low',
                       'unique_rnames_high',
                       'unique_rnames_number',
-                      'gff_classification'])
+                      'exons',
+                      'introns',
+                      'combos'])
+
 
 def calculate_statistics(qname_data, region_map):
     """Calculates statistics using SAM and GFF data"""
@@ -162,7 +165,8 @@ def calculate_statistics(qname_data, region_map):
                 unique_rnames_low = len(unique_rnames_low)
                 unique_rnames_high = len(unique_rnames_high)
 
-            gff_classes = ';'.join({region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]) for rname, location in qdata.rname_positions})
+            gff_classes = [region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]) for rname, location in qdata.rname_positions]
+            gff_classes = {x: gff_classes.count(x) for x in gff_classes}
 
             #TODO gff_classification
             yield OutLine(qname,
@@ -172,7 +176,9 @@ def calculate_statistics(qname_data, region_map):
                           unique_rnames_low,
                           unique_rnames_high,
                           unique_rnames_number,
-                          gff_classes)
+                          gff_classes.get('exon', 0),
+                          gff_classes.get('intron', 0),
+                          gff_classes.get('combo', 0))
 
         except IndexError:
             warnings.warn('QNAME data cannot be read, Skipping: {}'.format(qname))
@@ -195,14 +201,16 @@ def run(in_sam, in_gff, outpath):
                      'unique_rnames_low',
                      'unique_rnames_high',
                      'unique_rnames_number',
-                     'gff_classification']
+                     'exons',
+                     'introns',
+                     'combos']
     with open(outpath, 'w') as ofile:
         ofile.write('\n'.join([format_line_obj(oline, in_attributes, '\t') for oline in calculate_statistics(sam_data, region_map)]))
 
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
-OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v1.csv'
+OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v2.csv'
 
 if __name__ == '__main__':
     start = timeit.default_timer()

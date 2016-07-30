@@ -6,5 +6,6 @@ setup(name='SamLink',
       license='MIT',
       author='William Patterson, Amie Romney',
       packages=find_packages(),
-      install_requires=['pysam'])
+      install_requires=['pysam'],
+      entry_points={"console_scripts": ["samstat=samstat.samstat:main"],})
 

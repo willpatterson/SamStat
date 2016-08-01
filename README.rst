@@ -12,3 +12,11 @@ files:
 3. Number of unquie RNAMEs per QNAME
 4. Range of RNAMEs per QNAME
 5. Link attribute type of sequences using Gnomon GFF files
+
+Usage:
+------
+
+::
+
+  samstat <SAM_filepath> <GFF_filepath> <Out_filepath>
+  samstat --help

@@ -12,6 +12,13 @@ files:
 3. Number of unquie RNAMEs per QNAME
 4. Range of RNAMEs per QNAME
 5. Link attribute type of sequences using Gnomon GFF files
+Install:
+--------
+
+::
+  git clone https://github.com/willpatterson/SamStat.git
+  cd SamStat
+  python setup.py install
 
 Usage:
 ------

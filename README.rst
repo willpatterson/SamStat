@@ -16,6 +16,8 @@ files:
 Install:
 --------
 
+**requires python3**
+
 ::
 
   git clone https://github.com/willpatterson/SamStat.git

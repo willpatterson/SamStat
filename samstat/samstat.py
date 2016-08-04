@@ -167,7 +167,7 @@ def calculate_statistics(qname_data, region_map):
                 unique_rnames_low = len(unique_rnames_low)
                 unique_rnames_high = len(unique_rnames_high)
 
-            gff_classes = [region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]) for rname, location in qdata.rname_positions]
+            gff_classes = [region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]-1) for rname, location in qdata.rname_positions]
             gff_classes = {x: gff_classes.count(x) for x in gff_classes}
 
             #TODO gff_classification

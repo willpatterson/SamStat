@@ -30,4 +30,5 @@ Usage:
 ::
 
   samstat <SAM_filepath> <GFF_filepath> <Out_filepath>
-  samstat --help
+  samstat --help 
+  samstat -h

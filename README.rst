@@ -11,7 +11,7 @@ files:
 2. Number of forward/reverse per QNAME
 3. Number of unquie RNAMEs per QNAME
 4. Range of RNAMEs per QNAME
-5. Link attribute type of sequences using Gnomon GFF files
+5. Link attribute type of sequences using Gnomon GFF3 files
 
 Install:
 --------
@@ -29,6 +29,6 @@ Usage:
 
 ::
 
-  samstat <SAM_filepath> <GFF_filepath> <Out_filepath>
+  samstat <SAM_filepath> <GFF3_filepath> <Out_filepath>
   samstat --help 
   samstat -h

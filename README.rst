@@ -2,9 +2,9 @@
 SamStat
 *******
 
-SamStat is a custom script used in a bioinformatics pipeline.
+SamStat is a custom toolkit used in a bioinformatics pipeline.
 
-SamStat preforms the following operations on corrispoding .sam file and .gff 
+SamStat preforms the following operations on qnames from a SAM file and corrispoding GFF3 file  
 files:
 
 1. Number of lines per QNAME

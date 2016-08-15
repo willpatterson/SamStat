@@ -5,13 +5,12 @@ SamStat
 SamStat is a custom toolkit used in a bioinformatics pipeline.
 
 
-SamStat preforms the following operations on qnames from a SAM file and corrispoding GFF3 file  
-files:
+SamStat preforms the following operations on QNAMES from a SAM file:
 
 1. Number of lines per QNAME
 2. Number of unquie RNAMEs per QNAME
 3. Range of RNAMEs per QNAME
-4. Link attribute type of sequences using Gnomon GFF3 files
+4. Link attribute type of sequences using a corresponding GFF3 file from the same dataset
 
 Install:
 --------

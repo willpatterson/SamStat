@@ -9,7 +9,6 @@ import pysam
 import warnings
 import timeit
 from collections import namedtuple
-from functools import lru_cache
 from operator import itemgetter
 
 import sys

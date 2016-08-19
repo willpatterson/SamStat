@@ -1,14 +1,10 @@
 """ Region Map
 This file contains the code for reading GFF3 files into region maps
 """
-import argparse
 import os
-import pysam
 import warnings
-import timeit
 from collections import namedtuple
 from functools import lru_cache
-from operator import itemgetter
 
 def split_gen(s, delims):
     """iterates a delimited line"""

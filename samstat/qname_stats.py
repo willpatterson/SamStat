@@ -12,6 +12,11 @@ from collections import namedtuple
 from functools import lru_cache
 from operator import itemgetter
 
+import sys
+sys.path.append('..')
+
+from region_map import RegionMap
+
 SamIn = namedtuple('InLine',
                    ['alignment_number',
                     'zeros',

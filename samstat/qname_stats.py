@@ -18,8 +18,6 @@ from region_map import RegionMap
 
 SamIn = namedtuple('InLine',
                    ['alignment_number',
-                    'zeros',
-                    'sixteens',
                     'cigar',
                     'rname_positions'])
 
@@ -28,19 +26,9 @@ def read_alignment_map(path):
     qnames = {}
     samfile = pysam.AlignmentFile(path, 'r')
     for count, seq_line in enumerate(samfile):
-        zeros = 0
-        sixteens = 0
-        if seq_line.flag == 16:
-            zeros = 0
-            sixteens = 1
-        elif seq_line.flag == 0:
-            zeros = 1
-            sixteens = 0
         qname = seq_line.query_name
         qnames.setdefault(qname, SamIn([0], [0], [0], seq_line.cigar, []))
         qnames[qname].alignment_number[0] += 1
-        qnames[qname].zeros[0] += zeros
-        qnames[qname].sixteens[0] += sixteens
         try:
             qnames[qname].rname_positions.append((seq_line.reference_name,
                                                   seq_line.reference_start))
@@ -52,8 +40,6 @@ def read_alignment_map(path):
 OutLine = namedtuple('OutLine',
                      ['qname',
                       'alignment_number',
-                      'zeros',
-                      'sixteens',
                       'unique_rnames_low',
                       'unique_rnames_high',
                       'unique_rnames_number',
@@ -66,8 +52,6 @@ def calculate_statistics(qname_data, region_map):
     """Calculates statistics using SAM and GFF data"""
     for qname, qdata in qname_data.items():
         alignment_number = qdata.alignment_number[0]
-        zeros = qdata.zeros[0]
-        sixteens = qdata.sixteens[0]
         try:
             raw_rnames = [x[0] for x in qdata.rname_positions]
             unique_rnames = sorted({(x, raw_rnames.count(x)) for x in raw_rnames},
@@ -87,8 +71,6 @@ def calculate_statistics(qname_data, region_map):
             #TODO gff_classification
             yield OutLine(qname,
                           alignment_number,
-                          zeros,
-                          sixteens,
                           unique_rnames_low,
                           unique_rnames_high,
                           unique_rnames_number,
@@ -112,8 +94,6 @@ def run(in_sam, in_gff, outpath):
     region_map = RegionMap(in_gff)
     in_attributes = ['qname',
                      'alignment_number',
-                     'zeros',
-                     'sixteens',
                      'unique_rnames_low',
                      'unique_rnames_high',
                      'unique_rnames_number',

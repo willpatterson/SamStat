@@ -27,7 +27,7 @@ def read_alignment_map(path):
     samfile = pysam.AlignmentFile(path, 'r')
     for count, seq_line in enumerate(samfile):
         qname = seq_line.query_name
-        qnames.setdefault(qname, SamIn([0], [0], [0], seq_line.cigar, []))
+        qnames.setdefault(qname, SamIn([0], seq_line.cigar, []))
         qnames[qname].alignment_number[0] += 1
         try:
             qnames[qname].rname_positions.append((seq_line.reference_name,

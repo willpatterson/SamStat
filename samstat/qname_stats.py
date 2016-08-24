@@ -14,7 +14,7 @@ from operator import itemgetter
 import sys
 sys.path.append('..')
 
-from region_map import RegionMap
+from maps import RegionMap
 
 
 SamIn = namedtuple('InLine',

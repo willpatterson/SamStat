@@ -7,14 +7,14 @@ import pysam
 from collections import namedtuple
 from functools import lru_cache
 
-class AlignmentMap(object):
+class AlignmentMap(dict):
     SamIn = namedtuple('InLine',
                        ['alignment_number',
                         'cigar',
                         'rname_positions'])
 
     def __init__(self, path):
-        self.amap = self.read_alignment_map(path)
+        self.update(self.read_alignment_map(path))
 
     @classmethod
     def read_alignment_map(cls, path):

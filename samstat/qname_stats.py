@@ -16,6 +16,7 @@ sys.path.append('..')
 
 from region_map import RegionMap
 
+
 SamIn = namedtuple('InLine',
                    ['alignment_number',
                     'cigar',

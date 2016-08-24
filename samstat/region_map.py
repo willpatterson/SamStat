@@ -3,8 +3,35 @@ This file contains the code for reading GFF3 files into region maps
 """
 import os
 import warnings
+import pysam
 from collections import namedtuple
 from functools import lru_cache
+
+class AlignmentMap(object):
+    SamIn = namedtuple('InLine',
+                       ['alignment_number',
+                        'cigar',
+                        'rname_positions'])
+
+    def __init__(self, path):
+        self.amap = self.read_alignment_map(path)
+
+    @classmethod
+    def read_alignment_map(cls, path):
+        """Reads Alignment map SAM/BAM file into dictionary"""
+        amap = {}
+        samfile = pysam.AlignmentFile(path, 'r')
+        for count, seq_line in enumerate(samfile):
+            amap = seq_line.query_name
+            qnames.setdefault(qname, cls.SamIn([0], seq_line.cigar, []))
+            qnames[qname].alignment_number[0] += 1
+            try:
+                amap[qname].rname_positions.append((seq_line.reference_name,
+                                                      seq_line.reference_start))
+            except ValueError:
+                warnings.warn('Reference Name is -1, Line #: {}'.format(count))
+
+        return amap
 
 def split_gen(s, delims):
     """iterates a delimited line"""

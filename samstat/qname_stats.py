@@ -68,7 +68,6 @@ def calculate_statistics(qname_data, region_map):
             gff_classes = [region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]-1) for rname, location in qdata.rname_positions]
             gff_classes = {x: gff_classes.count(x) for x in gff_classes}
 
-            #TODO gff_classification
             yield OutLine(qname,
                           alignment_number,
                           unique_rnames_low,

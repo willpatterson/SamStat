@@ -10,6 +10,7 @@ from functools import lru_cache
 class AlignmentMap(dict):
     SamIn = namedtuple('InLine',
                        ['alignment_number',
+                        'flag',
                         'cigar',
                         'rname_positions'])
 
@@ -22,8 +23,12 @@ class AlignmentMap(dict):
         amap = {}
         samfile = pysam.AlignmentFile(path, 'r')
         for count, seq_line in enumerate(samfile):
-            amap = seq_line.query_name
-            qnames.setdefault(qname, cls.SamIn([0], seq_line.cigar, []))
+            qname = seq_line.query_name
+            qnames.setdefault(qname,
+                              cls.SamIn([0],
+                              seq_line.flag,
+                              seq_line.cigar,
+                              []))
             qnames[qname].alignment_number[0] += 1
             try:
                 amap[qname].rname_positions.append((seq_line.reference_name,

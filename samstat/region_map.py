@@ -20,6 +20,7 @@ class RegionMap(object):
     used to determine gene attribute types from sequence location ranges
     """
     Region = namedtuple('Region', ['features', 'length'])
+    Feature = namedtuple('Feature', ['location', 'strand'])
     def __init__(self, gff_path, accepted_features='exon'):
         if isinstance(accepted_features, str):
             accepted_features = tuple([accepted_features])
@@ -42,8 +43,11 @@ class RegionMap(object):
                     next(line_gen)
                     feature = next(line_gen)
                     location = [int(next(line_gen)), int(next(line_gen))]
+                    next(line_gen)
+                    strand = next(line_gen)
+                    tmp_feature = cls.Feature(location, strand)
                     try:
-                        region_map[region].features[feature].append(location)
+                        region_map[region].features[feature].append(tmp_feature)
                     except KeyError:
                         if feature == 'region':
                             region_map.setdefault(region,
@@ -55,7 +59,7 @@ class RegionMap(object):
                                                              None))
                             try:
                                 region_map[region].features[feature]\
-                                                  .append(location)
+                                                  .append(tmp_feature)
                             except KeyError:
                                 pass
 
@@ -69,9 +73,9 @@ class RegionMap(object):
         for key, region in region_map.items():
             if region.length is None:
                 features = iter(region.features)
-                largest = next(features)[1]
+                largest = next(features)
                 for feat in features:
-                    if largest < feat[1]: largest = feat[1]
+                    if largest < feat.location[1]: largest = feat.location[1]
                 region_map[key] = cls.Region(region.features, largest)
         return region_map
 
@@ -81,8 +85,8 @@ class RegionMap(object):
                                    location_start,
                                    location_stop):
         """Gets location classification from region_map"""
-        for key, ranges in self.rmap[region_name].features.items():
-            for feat_range in ranges:
+        for key, features in self.rmap[region_name].features.items():
+            for feat_range, _ in features:
                 start_flag = location_start in range(feat_range[0],
                                                      feat_range[1])
                 stop_flag = location_stop in range(feat_range[0],

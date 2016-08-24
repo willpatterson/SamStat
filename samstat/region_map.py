@@ -18,6 +18,9 @@ def split_gen(s, delims):
 class RegionMap(object):
     """Reads creates a feature location map from a gff file that can be
     used to determine gene attribute types from sequence location ranges
+
+    Region Map Structure:
+        {'RNAME': [Features: [location, strand],], Length}
     """
     Region = namedtuple('Region', ['features', 'length'])
     Feature = namedtuple('Feature', ['location', 'strand'])

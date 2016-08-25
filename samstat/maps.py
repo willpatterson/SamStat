@@ -52,7 +52,7 @@ class RegionMap(object):
     used to determine gene attribute types from sequence location ranges
 
     Region Map Structure:
-        {'RNAME': [Features: [location, strand],], Length}
+        {'RNAME': [gene: (([Features: (location, strand),], (coordinates: 0, 1))], Length}
     """
     Region = namedtuple('Region', ['features', 'length'])
     Feature = namedtuple('Feature', ['location', 'strand'])

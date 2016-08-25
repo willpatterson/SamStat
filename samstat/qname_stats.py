@@ -46,6 +46,7 @@ OutLine = namedtuple('OutLine',
                       'unique_rnames_number',
                       'exons',
                       'introns',
+                      'intergenes',
                       'combos'])
 
 
@@ -76,6 +77,7 @@ def calculate_statistics(qname_data, region_map):
                           unique_rnames_number,
                           gff_classes.get('exon', 0),
                           gff_classes.get('intron', 0),
+                          gff_classes.get('intergene', 0),
                           gff_classes.get('combo', 0))
 
         except IndexError:
@@ -99,6 +101,7 @@ def run(in_sam, in_gff, outpath):
                      'unique_rnames_number',
                      'exons',
                      'introns',
+                     'intergenes',
                      'combos']
     with open(outpath, 'w') as ofile:
         ofile.write('\n'.join([format_line_obj(oline, in_attributes, '\t') for oline in calculate_statistics(sam_data, region_map)]))

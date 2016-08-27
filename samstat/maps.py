@@ -1,6 +1,7 @@
 """ Region Map
 This file contains the code for reading GFF3 files into region maps
 """
+import bisect
 import os
 import warnings
 import pysam
@@ -47,6 +48,48 @@ def split_gen(s, delims):
             start = i+1
     yield s[start:]
 
+class Region(object):
+    """Class that handels the region information in GFF3 files"""
+
+    Gene = namedtuple('Gene', ['features', 'strand'])
+    def __init__(self, length, strand):
+        self.length = length
+        self.strand = strand
+        self.ordered_genes = []
+        self.genes = dict()
+
+    def add_feature(self, feature, location, strand):
+        """Adds either gene to self.genes or exon to a gene in self.genes"""
+        if feature == 'exon':
+            pass
+        elif feature == 'gene':
+            bisect.insort_left(self.ordered_genes, location)
+            self.genes.setdefault(location, self.Gene([], strand))
+
+    def find_parent_gene(starting_location, stopping_location):
+        """Searches through gene locations to find matching gene
+        returns gene coordinates in a tuple if a match is found"""
+        pass
+
+    def binary_coordinate_match(coordinates, coordinate_pair):
+        """Trys to figure out if the coordinate_pair is in an ordered list of
+        coordinate_pairs using binary search"""
+        pair_average = (coordinate_pair[0]+coordinate_pair[1])/2
+        high = len(coordinates)
+        low = 0
+        while low < high:
+            mid = (low+high)//2
+            midvald = coordinates[mid]
+            if midval[0] < pair_average < midval[1]:
+                return midval
+            elif midval[0] > pair_average:
+                high = mid
+            elif midval[0] < pair_average:
+                low = mid+1
+            else:
+                raise Exception('Unknown behavior') #TODO test
+
+
 class RegionMap(object):
     """Reads creates a feature location map from a gff file that can be
     used to determine gene attribute types from sequence location ranges
@@ -54,7 +97,7 @@ class RegionMap(object):
     Region Map Structure:
         {'RNAME': [gene: (([Features: (location, strand),], (coordinates: 0, 1))], Length}
     """
-    Region = namedtuple('Region', ['features', 'length'])
+    Region = namedtuple('Region', ['genes', 'length'])
     Feature = namedtuple('Feature', ['location', 'strand'])
     def __init__(self, gff_path, accepted_features='exon'):
         if isinstance(accepted_features, str):

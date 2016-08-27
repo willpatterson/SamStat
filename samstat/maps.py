@@ -71,6 +71,7 @@ class Region(object):
         returns gene coordinates in a tuple if a match is found"""
         pass
 
+    @staticmethod
     def binary_coordinate_match(coordinates, coordinate_pair):
         """Trys to figure out if the coordinate_pair is in an ordered list of
         coordinate_pairs using binary search"""

@@ -88,6 +88,7 @@ class Region(object):
                 low = mid+1
             else:
                 raise Exception('Unknown behavior') #TODO test
+        return -1
 
 
 class RegionMap(object):

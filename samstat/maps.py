@@ -69,7 +69,9 @@ class Region(object):
     def find_parent_gene(starting_location, stopping_location):
         """Searches through gene locations to find matching gene
         returns gene coordinates in a tuple if a match is found"""
-        pass
+        return self.genes.get(binary_coordinate_match(self.ordered_genes,
+                                                      self.binary_coordinate_match((starting_location,
+                                                                                    stopping_location)), 0)
 
     @staticmethod
     def binary_coordinate_match(coordinates, coordinate_pair):

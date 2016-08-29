@@ -62,7 +62,10 @@ class Region(object):
     def add_feature(self, feature, location, strand):
         """Adds either gene to self.genes or exon to a gene in self.genes"""
         if feature == 'exon':
-            pass
+            try:
+                self.genes[self.binary_coordinate_match(self.ordered_genes, location)].features.append(self.Feature(location, strand))
+            except KeyError:
+                warnings.warn('warning') #TODO
         elif feature == 'gene':
             bisect.insort_left(self.ordered_genes, location)
             self.genes.setdefault(location, self.Gene([], strand))

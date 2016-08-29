@@ -70,13 +70,6 @@ class Region(object):
             bisect.insort_left(self.ordered_genes, location)
             self.genes.setdefault(location, self.Gene([], strand))
 
-    def find_parent_gene(starting_location, stopping_location):
-        """Searches through gene locations to find matching gene
-        returns gene coordinates in a tuple if a match is found"""
-        return self.genes.get(binary_coordinate_match(self.ordered_genes,
-                                                      self.binary_coordinate_match((starting_location,
-                                                                                    stopping_location)), 0)
-
     @staticmethod
     def binary_coordinate_match(ordered_coordinates, coordinate_pair):
         """Trys to figure out if the coordinate_pair is in an ordered list of

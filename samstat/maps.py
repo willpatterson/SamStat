@@ -133,12 +133,12 @@ class RegionMap(object):
                     except KeyError:
                         if feature == 'region':
                             region_map.setdefault(region,
-                                                  cls.Region(feature_temp,
-                                                             location[1]))
+                                                  Region(location[1],
+                                                         strand))
                         else:
                             region_map.setdefault(region,
-                                                  cls.Region(feature_temp,
-                                                             None))
+                                                  Region(None,
+                                                         strand))
                             try:
                                 region_map[region].features[feature]\
                                                   .append(tmp_feature)

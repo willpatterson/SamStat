@@ -126,7 +126,9 @@ class RegionMap(object):
                     strand = next(line_gen)
                     tmp_feature = cls.Feature(location, strand)
                     try:
-                        region_map[region].features[feature].append(tmp_feature)
+                        region_map[region].add_feature(feature,
+                                                       location,
+                                                       strand)
                     except KeyError:
                         if feature == 'region':
                             region_map.setdefault(region,

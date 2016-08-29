@@ -52,6 +52,7 @@ class Region(object):
     """Class that handels the region information in GFF3 files"""
 
     Gene = namedtuple('Gene', ['features', 'strand'])
+    Feature = namedtuple('Feature', ['location', 'strand'])
     def __init__(self, length, strand):
         self.length = length
         self.strand = strand
@@ -74,15 +75,16 @@ class Region(object):
                                                                                     stopping_location)), 0)
 
     @staticmethod
-    def binary_coordinate_match(coordinates, coordinate_pair):
+    def binary_coordinate_match(ordered_coordinates, coordinate_pair):
         """Trys to figure out if the coordinate_pair is in an ordered list of
-        coordinate_pairs using binary search"""
+        coordinate pairs using binary search
+        Returns the coordinate_pair"""
         pair_average = (coordinate_pair[0]+coordinate_pair[1])/2
-        high = len(coordinates)
+        high = len(ordered_coordinates)
         low = 0
         while low < high:
             mid = (low+high)//2
-            midvald = coordinates[mid]
+            midvald = ordered_coordinates[mid]
             if midval[0] < pair_average < midval[1]:
                 return midval
             elif midval[0] > pair_average:
@@ -102,7 +104,6 @@ class RegionMap(object):
         {'RNAME': [gene: (([Features: (location, strand),], (coordinates: 0, 1))], Length}
     """
     Region = namedtuple('Region', ['genes', 'length'])
-    Feature = namedtuple('Feature', ['location', 'strand'])
     def __init__(self, gff_path, accepted_features='exon'):
         if isinstance(accepted_features, str):
             accepted_features = tuple([accepted_features])

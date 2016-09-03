@@ -25,15 +25,15 @@ class AlignmentMap(dict):
         samfile = pysam.AlignmentFile(path, 'r')
         for count, seq_line in enumerate(samfile):
             qname = seq_line.query_name
-            qnames.setdefault(qname,
-                              cls.SamIn([0],
-                              seq_line.flag,
-                              seq_line.cigar,
-                              []))
-            qnames[qname].alignment_number[0] += 1
+            amap.setdefault(qname,
+                            cls.SamIn([0],
+                            seq_line.flag,
+                            seq_line.cigar,
+                            []))
+            amap[qname].alignment_number[0] += 1
             try:
                 amap[qname].rname_positions.append((seq_line.reference_name,
-                                                      seq_line.reference_start))
+                                                    seq_line.reference_start))
             except ValueError:
                 warnings.warn('Reference Name is -1, Line #: {}'.format(count))
 
@@ -96,7 +96,10 @@ class Region(object):
     def binary_coordinate_match(ordered_coordinates, coordinate_pair):
         """Trys to figure out if the coordinate_pair is in an ordered list of
         coordinate pairs using binary search
-        Returns the coordinate_pair"""
+        Returns the coordinate_pair
+        TODO:
+            match overlapping genes
+        """
         pair_average = (coordinate_pair[0]+coordinate_pair[1])/2
         high = len(ordered_coordinates)
         low = 0

@@ -70,6 +70,28 @@ class Region(object):
             bisect.insort_left(self.ordered_genes, location)
             self.genes.setdefault(location, self.Gene([], strand))
 
+    def classify_read(self, location):
+        """Determines in read sequence is:
+              exonic, intronic, intergenic, or a combination
+        """
+        gene_match = self.binary_coordinate_match(self.ordered_genes, location)
+        try:
+            features = self.genes[gene_match].features
+            for feat_range, _ in features:
+                start_flag = feat_range[0] < location_start < feat_range[1]
+                stop_flag = feat_range[0] < location_stop < feat_range[1]
+
+                if stop_flag is True and start_flag is True:
+                    return key
+                elif stop_flag != start_flag:
+                    return 'combo'
+                else:
+                    return 'intron'
+
+        except KeyError:
+            if location[1] < self.length:
+                return 'intergene'
+
     @staticmethod
     def binary_coordinate_match(ordered_coordinates, coordinate_pair):
         """Trys to figure out if the coordinate_pair is in an ordered list of
@@ -166,6 +188,10 @@ class RegionMap(object):
                                    location_start,
                                    location_stop):
         """Gets location classification from region_map"""
+        try:
+            self.rmap[region_name].binary_coordinate_match(
+        except KeyError:
+            warnings.warn('Region name {} not found'.format(region_name))
         for key, features in self.rmap[region_name].features.items():
             for feat_range, _ in features:
                 start_flag = location_start in range(feat_range[0],

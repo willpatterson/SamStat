@@ -56,7 +56,6 @@ class Region(object):
     def __init__(self, length, strand):
         self.length = length
         self.strand = strand
-        self.ordered_genes = []
         self.genes = dict()
 
     def add_feature(self, feature, location, strand):
@@ -67,7 +66,6 @@ class Region(object):
             except KeyError:
                 warnings.warn('warning') #TODO
         elif feature == 'gene':
-            bisect.insort_left(self.ordered_genes, location)
             self.genes.setdefault(location, self.Gene([], strand))
 
     def classify_read(self, location):
@@ -91,6 +89,7 @@ class Region(object):
         except KeyError:
             if location[1] < self.length:
                 return 'intergene'
+
 
     @staticmethod
     def binary_coordinate_match(ordered_coordinates, coordinate_pair):
@@ -192,7 +191,8 @@ class RegionMap(object):
                                    location_stop):
         """Gets location classification from region_map"""
         try:
-            self.rmap[region_name].binary_coordinate_match(
+            #self.rmap[region_name].binary_coordinate_match(
+            pass
         except KeyError:
             warnings.warn('Region name {} not found'.format(region_name))
         for key, features in self.rmap[region_name].features.items():
@@ -209,4 +209,7 @@ class RegionMap(object):
                 else:
                     return 'intron'
 
+
+if __name__ == '__main__':
+    region 
 

@@ -62,17 +62,17 @@ class Region(object):
         """Adds either gene to self.genes or exon to a gene in self.genes"""
         if feature == 'exon':
             try:
-                self.genes[self.binary_coordinate_match(self.ordered_genes, location)].features.append(self.Feature(location, strand))
+                self.genes[self.binary_coordinate_match(self.genes, location)].features.setdefault(location, strand)
             except KeyError:
                 warnings.warn('warning') #TODO
         elif feature == 'gene':
-            self.genes.setdefault(location, self.Gene([], strand))
+            self.genes.setdefault(location, self.Gene({}, strand))
 
     def classify_read(self, location):
         """Determines in read sequence is:
               exonic, intronic, intergenic, or a combination
         """
-        gene_match = self.binary_coordinate_match(self.ordered_genes, location)
+        features = self.binary_coordinate_match(self.genes, location)
         try:
             features = self.genes[gene_match].features
             for feat_range, _ in features:
@@ -92,28 +92,45 @@ class Region(object):
 
 
     @staticmethod
-    def binary_coordinate_match(ordered_coordinates, coordinate_pair):
+    def coordinate_relations(coordinate_pair, relation_coordinate_pair):
+        """Returns weather the relation_coordinate_pair's uppper and lower
+        bounds are within coordinate_pair
+        """
+        if coordinate_pair[0] < relation_coordinate_pair[0] < coordinate_pair[1]:
+            lower = True
+        if coordinate_pair[0] < relation_coordinate_pair[1] < coordinate_pair[1]:
+            upper = True
+
+        return (lower, upper)
+
+    #Match is outside binary_coordinate_match because I don't want to create
+    #and destroy namedtuple classes every function call
+    Match = namedtuple('Match', ['index', 'lower', 'upper', 'value'])
+    @classmethod
+    def binary_coordinate_match(cls, coordinates, coordinate_pair):
         """Trys to figure out if the coordinate_pair is in an ordered list of
         coordinate pairs using binary search
         Returns the coordinate_pair
         TODO:
             match overlapping genes
         """
+        coordinates = list(OrderedDict(coordinates).items())
         pair_average = (coordinate_pair[0]+coordinate_pair[1])/2
         high = len(ordered_coordinates)
         low = 0
         while low < high:
             mid = (low+high)//2
-            midvald = ordered_coordinates[mid]
-            if midval[0] < pair_average < midval[1]:
-                return midval
+            midval = ordered_coordinates[mid][0]
+            lower, upper = coordinate_relations(midval, coordinate_pair)
+            if upper or lower:
+                return cls.Match(mid, lower, upper, midval)
             elif midval[0] > pair_average:
                 high = mid
             elif midval[0] < pair_average:
                 low = mid+1
             else:
                 raise Exception('Unknown behavior') #TODO test
-        return -1
+        return Match(None, None, None, None)
 
 
 class RegionMap(object):

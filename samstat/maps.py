@@ -139,15 +139,19 @@ class Region(object):
     def sequential_coordinate_match(cls, coordinates, coordinate_pair, start=0, step=1):
         """Searches for matches until none are found"""
         coordinates = list(OrderedDict(coordinates).items())
-        finished = False
         matches = []
-        while finished is False:
-            current = coordinates[start][0]
+        while True:
+            try:
+                current = coordinates[start][0]
+            except IndexError:
+                return matches
+
             lower, upper = cls.coordinate_relations(current, coordinate_pair)
-            #TODO left off here
-
-
-
+            if lower or upper:
+                matches.append(cls.Match(start, lower, upper, current))
+                start += step
+            else:
+                return matches
 
 
 class RegionMap(object):

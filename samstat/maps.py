@@ -66,7 +66,7 @@ class Region(object):
             except KeyError:
                 warnings.warn('warning') #TODO
         elif feature == 'gene':
-            self.genes.setdefault(location, self.Gene({}, strand))
+            self.genes.setdefault(location, self.Gene(dict(), strand))
 
     def classify_read(self, location):
         """Determines in read sequence is:
@@ -187,7 +187,7 @@ class RegionMap(object):
                     region = next(line_gen)
                     next(line_gen)
                     feature = next(line_gen)
-                    location = [int(next(line_gen)), int(next(line_gen))]
+                    location = (int(next(line_gen)), int(next(line_gen)))
                     next(line_gen)
                     strand = next(line_gen)
                     #tmp_feature = cls.Feature(location, strand)

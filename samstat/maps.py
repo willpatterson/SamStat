@@ -108,8 +108,6 @@ class Region(object):
 
         return (lower, upper)
 
-    #Match is outside binary_coordinate_match because I don't want to create
-    #and destroy namedtuple classes every function call
     Match = namedtuple('Match', ['index', 'lower', 'upper', 'value'])
     @classmethod
     def binary_coordinate_match(cls, coordinates, coordinate_pair):

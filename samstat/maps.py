@@ -210,11 +210,14 @@ class RegionMap(object):
 
                 except StopIteration:
                     warnings.warn('Invalid line: {} ... skipped'.format(count))
-        return cls.calc_missing_region_lengths(region_map)
+        #return cls.calc_missing_region_lengths(region_map)
+        return region_map
 
     @classmethod
     def calc_missing_region_lengths(cls, region_map):
-        """Calculates region lengths for regions without a region line"""
+        """Calculates region lengths for regions without a region line
+        TODO: fix feature gathering
+        """
         for key, region in region_map.items():
             if region.length is None:
                 features = iter(region.features)

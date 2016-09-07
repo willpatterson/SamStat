@@ -190,7 +190,7 @@ class RegionMap(object):
                     location = [int(next(line_gen)), int(next(line_gen))]
                     next(line_gen)
                     strand = next(line_gen)
-                    tmp_feature = cls.Feature(location, strand)
+                    #tmp_feature = cls.Feature(location, strand)
                     try:
                         region_map[region].add_feature(feature,
                                                        location,
@@ -205,8 +205,9 @@ class RegionMap(object):
                                                   Region(None,
                                                          strand))
                             try:
-                                region_map[region].features[feature]\
-                                                  .append(tmp_feature)
+                                region_map[region].add_feature(feature,
+                                                               location,
+                                                               strand)
                             except KeyError:
                                 pass
 

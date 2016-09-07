@@ -124,11 +124,11 @@ class Region(object):
         """
         coordinates = list(OrderedDict(coordinates).items())
         pair_average = (coordinate_pair[0]+coordinate_pair[1])/2
-        high = len(ordered_coordinates)
+        high = len(coordinates)
         low = 0
         while low < high:
             mid = (low+high)//2
-            midval = ordered_coordinates[mid][0]
+            midval = coordinates[mid][0]
             lower, upper = cls.coordinate_relations(midval, coordinate_pair)
             if upper or lower:
                 return cls.Match(mid, lower, upper, midval)

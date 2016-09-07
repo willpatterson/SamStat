@@ -5,6 +5,7 @@ import bisect
 import os
 import warnings
 import pysam
+import timeit
 from collections import namedtuple
 from collections import OrderedDict
 from functools import lru_cache
@@ -258,6 +259,15 @@ IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
 OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v2.csv'
 
 if __name__ == '__main__':
+
+    start = timeit.default_timer()
     rm = RegionMap(IN_GFF)
+    end = timeit.default_timer()
+
+    print('Total Program Time: {} seconds'.format(end-start))
+
+    rm_list = list(rm.rmap.items())
+    print(rm_list[0])
+    print(len(rm_list))
 
 

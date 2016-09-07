@@ -6,6 +6,7 @@ import os
 import warnings
 import pysam
 from collections import namedtuple
+from collections import OrderedDict
 from functools import lru_cache
 
 class AlignmentMap(dict):

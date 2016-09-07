@@ -134,7 +134,7 @@ class Region(object):
                 low = mid+1
             else:
                 raise Exception('Unknown behavior') #TODO test
-        return Match(None, None, None, None)
+        return cls.Match(None, None, None, None)
 
     @classmethod
     def sequential_coordinate_match(cls, coordinates, coordinate_pair, start=0, step=1):

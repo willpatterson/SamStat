@@ -252,6 +252,11 @@ class RegionMap(object):
                     return 'intron'
 
 
+IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
+IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
+OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v2.csv'
+
 if __name__ == '__main__':
-    pass
+    rm = RegionMap(IN_GFF)
+
 

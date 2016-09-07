@@ -106,12 +106,8 @@ class Region(object):
         """Returns weather the relation_coordinate_pair's uppper and lower
         bounds are within coordinate_pair
         """
-        if coordinate_pair[0] < relation_coordinate_pair[0] < coordinate_pair[1]:
-            lower = True
-        if coordinate_pair[0] < relation_coordinate_pair[1] < coordinate_pair[1]:
-            upper = True
-
-        return (lower, upper)
+        return (bool(coordinate_pair[0] < relation_coordinate_pair[0] < coordinate_pair[1]),
+                bool(coordinate_pair[0] < relation_coordinate_pair[1] < coordinate_pair[1]))
 
     Match = namedtuple('Match', ['index', 'lower', 'upper', 'value'])
     @classmethod

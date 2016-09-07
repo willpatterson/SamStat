@@ -90,6 +90,11 @@ class Region(object):
             if location[1] < self.length:
                 return 'intergene'
 
+    def gene_match(self, sequence_location):
+        """Finds the gene(s) that a sequence aligns too
+        Walks up or down from a binary coordinate match"""
+        genes = []
+        match = self.binary_coordinate_match(self.genes, sequence_location)
 
     @staticmethod
     def coordinate_relations(coordinate_pair, relation_coordinate_pair):
@@ -121,7 +126,7 @@ class Region(object):
         while low < high:
             mid = (low+high)//2
             midval = ordered_coordinates[mid][0]
-            lower, upper = coordinate_relations(midval, coordinate_pair)
+            lower, upper = cls.coordinate_relations(midval, coordinate_pair)
             if upper or lower:
                 return cls.Match(mid, lower, upper, midval)
             elif midval[0] > pair_average:
@@ -131,6 +136,20 @@ class Region(object):
             else:
                 raise Exception('Unknown behavior') #TODO test
         return Match(None, None, None, None)
+
+    @classmethod
+    def sequential_coordinate_match(cls, coordinates, coordinate_pair, start=0, step=1):
+        """Searches for matches until none are found"""
+        coordinates = list(OrderedDict(coordinates).items())
+        finished = False
+        matches = []
+        while finished is False:
+            current = coordinates[start][0]
+            lower, upper = cls.coordinate_relations(current, coordinate_pair)
+            #TODO left off here
+
+
+
 
 
 class RegionMap(object):

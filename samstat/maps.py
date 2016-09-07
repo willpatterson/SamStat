@@ -93,8 +93,12 @@ class Region(object):
     def gene_match(self, sequence_location):
         """Finds the gene(s) that a sequence aligns too
         Walks up or down from a binary coordinate match"""
-        genes = []
-        match = self.binary_coordinate_match(self.genes, sequence_location)
+        matching_genes = []
+        binary_match = self.binary_coordinate_match(self.genes, sequence_location)
+        overlapping_matches_upper = self.sequential_coordinate_match(self.genes, sequence_location, start=binary_match.index)
+        overlapping_matches_lower = self.sequential_coordinate_match(self.genes, sequence_location, start=binary_match.index, step=-1)
+        return [binary_match] + overlapping_matches_lower + overlapping_matches_upper
+
 
     @staticmethod
     def coordinate_relations(coordinate_pair, relation_coordinate_pair):
@@ -249,5 +253,5 @@ class RegionMap(object):
 
 
 if __name__ == '__main__':
-    region 
+    pass
 

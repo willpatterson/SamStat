@@ -14,7 +14,7 @@ class AlignmentMap(dict):
                        ['alignment_number',
                         'flag',
                         'cigar',
-                        'reference_name_locations'])
+                        'reference_names'])
 
     def __init__(self, path):
         self.update(self.read_alignment_map(path))
@@ -33,8 +33,9 @@ class AlignmentMap(dict):
                                       []))
             amap[qname].alignment_number[0] += 1
             try:
-                amap[qname].reference_name_locations.append((seq_line.reference_name,
-                                                             seq_line.reference_start))
+                amap[qname].reference_names.append((seq_line.reference_name,
+                                                             seq_line.reference_start,
+                                                             seq_line.flag))
             except ValueError:
                 #warnings.warn('Reference Name is -1, Line #: {}'.format(count))
                 pass
@@ -103,28 +104,6 @@ class Region(object):
                     exons += 1
 
         return self.Classification(False, exons, introns, combos)
-
-    def get_true_direction(self, sequence_location, relative_sequence_direction):
-        """Gets the true direction of a sequence by the directions of it's
-        parent sequences in the region map
-        """
-        def convert_direction(direction):
-            if direction is 0 or direction is '+':
-                direction = True
-            elif direction is 16 or direction is '-':
-                direction = False
-            else:
-                direction = None
-
-        directions = convert_
-        matching_genes = self.gene_location_match(sequence_location)
-        if len(matching_genes) is 0:
-            return self.Classification(1, 0, 0, 0)
-        for match in self.gene_location_match(sequence_location):
-            feature_matches = self.overlapping_coordinate_match(match.value.features, sequence_location)
-
-            if len(feature_matches) is 0:
-
 
     def gene_location_match(self, sequence_location):
         """Finds the gene(s) that a sequence aligns too
@@ -292,6 +271,37 @@ class RegionMap(object):
         except KeyError:
             warnings.warn('Region name {} not found in the region map'.format(region_name))
             return 0
+
+    def get_true_directions(self, region_name, sequence_location, sequence_direction):
+        """Gets the true direction of a sequence by the directions of it's
+        parent sequences in the region map
+        """
+        Directions = namedtuple('Directions', ['forwards', 'reverses'])
+        def convert_direction(direction):
+            if direction is 0 or direction is '+':
+                direction = True
+            elif direction is 16 or direction is '-':
+                direction = False
+            else:
+                direction = None
+
+        region = self.rmap[region_name]
+        region_direction = convert_direction(region.direction)
+        sequence_direction = convert_direction(sequence_direction)
+
+        raw_directions = []
+        matching_genes = self.gene_location_match(sequence_location)
+        for match in self.gene_location_match(sequence_location):
+            match_direction = convert_direction(match.direction)
+            feature_matches = region.overlapping_coordinate_match(match.value.features, sequence_location)
+            if len(feature_matches) is 0:
+                raw_directions.append((region_direction, match_direction, sequence_direction))
+            for feature_match in feature_matches:
+                feature_direction = convert_direction(feature_match.direction)
+                raw_directions.append((region_direction, match_direction, feature_direction, sequence_direction))
+
+        directions = [all(match) for match in raw_directions]
+        return Directions(forwards=directions.count(True), reverses=directions.count(False))
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'

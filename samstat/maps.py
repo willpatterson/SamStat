@@ -68,20 +68,20 @@ class Region(object):
                 for i in range(6): next(split_semi)
                 #parent_gene = next(split_semi)
                 #print('Exon: {}'.format(parent_gene))
-                self.genes[next(split_semi)].features.setdefault(location, strand)
+                bisect.insort_left(self.genes[next(split_semi)].features, self.Feature(location, strand))
             except KeyError:
                 warnings.warn('Exon found that doesnt match a gene') #TODO elaborate more
         elif feature == 'gene':
             for i in range(4): next(split_semi)
             #gene_name = next(split_semi)
             #print('Gene: {}'.format(gene_name))
-            self.genes.setdefault(next(split_semi), self.Gene(location, strand, dict()))
+            self.genes.setdefault(next(split_semi), self.Gene(location, strand, []))
 
-    def classify_sequence(self, location):
+    def classify_sequence(self, sequence_location):
         """Determines in read sequence is:
               exonic, intronic, intergenic, or a combination
         """
-        features = self.binary_coordinate_match(self.genes, location)
+        matching_genes = self.gene_location_match(sequence_location)
         try:
             features = self.genes[gene_match].features
             for feat_range, _ in features:

@@ -134,7 +134,7 @@ class Region(object):
         while low < high:
             mid = (low+high)//2
             midval = sorted_coordinates[mid]
-            lower, upper = cls.coordinate_relations(mival.location, coordinate_pair)
+            lower, upper = cls.coordinate_relations(midval.location, coordinate_pair)
             if upper or lower:
                 return cls.Match(mid, lower, upper, midval)
             elif midval.location[0] > pair_average:

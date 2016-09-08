@@ -78,7 +78,7 @@ class Region(object):
             #self.genes.setdefault(next(split_semi), self.Gene(location, strand, dict()))
             self.genes.setdefault(gene_name, self.Gene(location, strand, dict()))
 
-    def classify_read(self, location):
+    def classify_sequence(self, location):
         """Determines in read sequence is:
               exonic, intronic, intergenic, or a combination
         """
@@ -103,10 +103,11 @@ class Region(object):
     def gene_location_match(self, sequence_location):
         """Finds the gene(s) that a sequence aligns too
         Walks up or down from a binary coordinate match"""
+        sorted_genes = sorted(self.genes.values())
         matching_genes = []
-        binary_match = self.binary_coordinate_match(self.genes, sequence_location)
-        overlapping_matches_upper = self.sequential_coordinate_match(self.genes, sequence_location, start=binary_match.index+1)
-        overlapping_matches_lower = self.sequential_coordinate_match(self.genes, sequence_location, start=binary_match.index-1, step=-1)
+        binary_match = self.binary_coordinate_match(sorted_genes, sequence_location)
+        overlapping_matches_upper = self.sequential_coordinate_match(sorted_genes, sequence_location, start=binary_match.index+1)
+        overlapping_matches_lower = self.sequential_coordinate_match(sorted_genes, sequence_location, start=binary_match.index-1, step=-1)
         return [binary_match] + overlapping_matches_lower + overlapping_matches_upper
 
 
@@ -120,43 +121,41 @@ class Region(object):
 
     Match = namedtuple('Match', ['index', 'lower', 'upper', 'value'])
     @classmethod
-    def binary_coordinate_match(cls, coordinates, coordinate_pair):
+    def binary_coordinate_match(cls, sorted_coordinates, coordinate_pair):
         """Trys to figure out if the coordinate_pair is in an ordered list of
         coordinate pairs using binary search
         Returns the coordinate_pair
         TODO:
             match overlapping genes
         """
-        coordinates = sorted(coordinates.items())
         pair_average = (coordinate_pair[0]+coordinate_pair[1])/2
-        high = len(coordinates)
+        high = len(sorted_coordinates)
         low = 0
         while low < high:
             mid = (low+high)//2
-            midval = coordinates[mid][0]
-            lower, upper = cls.coordinate_relations(midval, coordinate_pair)
+            midval = sorted_coordinates[mid]
+            lower, upper = cls.coordinate_relations(mival.location, coordinate_pair)
             if upper or lower:
                 return cls.Match(mid, lower, upper, midval)
-            elif midval[0] > pair_average:
+            elif midval.location[0] > pair_average:
                 high = mid
-            elif midval[0] < pair_average:
+            elif midval.location[0] < pair_average:
                 low = mid+1
             else:
                 raise Exception('Unknown behavior') #TODO test
         return cls.Match(None, None, None, None)
 
     @classmethod
-    def sequential_coordinate_match(cls, coordinates, coordinate_pair, start=0, step=1):
+    def sequential_coordinate_match(cls, sorted_coordinates, coordinate_pair, start=0, step=1):
         """Searches for matches until none are found"""
-        coordinates = sorted(coordinates.items())
         matches = []
         while True:
             try:
-                current = coordinates[start][0]
+                current = sorted_coordinates[start]
             except IndexError:
                 return matches
 
-            lower, upper = cls.coordinate_relations(current, coordinate_pair)
+            lower, upper = cls.coordinate_relations(current.location, coordinate_pair)
             if lower or upper:
                 matches.append(cls.Match(start, lower, upper, current))
                 start += step

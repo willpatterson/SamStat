@@ -7,7 +7,6 @@ import warnings
 import pysam
 import timeit
 from collections import namedtuple
-from collections import OrderedDict
 from functools import lru_cache
 
 class AlignmentMap(dict):
@@ -119,7 +118,7 @@ class Region(object):
         TODO:
             match overlapping genes
         """
-        coordinates = list(OrderedDict(coordinates).items())
+        coordinates = sorted(coordinates.items())
         pair_average = (coordinate_pair[0]+coordinate_pair[1])/2
         high = len(coordinates)
         low = 0
@@ -140,7 +139,7 @@ class Region(object):
     @classmethod
     def sequential_coordinate_match(cls, coordinates, coordinate_pair, start=0, step=1):
         """Searches for matches until none are found"""
-        coordinates = list(OrderedDict(coordinates).items())
+        coordinates = sorted(coordinates.items())
         matches = []
         while True:
             try:

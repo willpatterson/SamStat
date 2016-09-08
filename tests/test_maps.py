@@ -45,8 +45,8 @@ class TestRegion(unittest.TestCase):
         match = Region.binary_coordinate_match(COORDS, FULL_MATCH_BINARY)
         self.assertTrue(match.lower)
         self.assertTrue(match.upper)
-        self.assertEquals(FULL_MATCH_BINARY, match.value)
-        self.assertEquals(2, match.index)
+        self.assertEqual(FULL_MATCH_BINARY, match.value)
+        self.assertEqual(1, match.index)
 
 
 

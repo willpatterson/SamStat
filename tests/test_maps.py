@@ -27,6 +27,18 @@ class TestRegion(unittest.TestCase):
         self.assertTrue(lower)
         self.assertTrue(upper)
 
+    def test_coordinate_relations_lower(self):
+        lower, upper = Region.coordinate_relations(COORD, LOWER_MATCH)
+        self.assertTrue(lower)
+        self.assertFalse(upper)
+
+    def test_coordinate_relations_upper(self):
+        lower, upper = Region.coordinate_relations(COORD, UPPER_MATCH)
+        self.assertFalse(lower)
+        self.assertTrue(upper)
+
+
+
 
 if __name__ == '__main__':
     test_classes = (TestRegionMap, TestRegion)

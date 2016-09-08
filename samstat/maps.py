@@ -79,6 +79,7 @@ class Region(object):
             #print('Gene: {}'.format(gene_name))
             self.genes.setdefault(next(split_semi), self.Gene(location, direction, []))
 
+    def add_sequence
 
     Classification = namedtuple('Classification',
                                 ['intergene', 'exons', 'introns', 'combos'])
@@ -218,32 +219,32 @@ class RegionMap(object):
                     next(line_gen)
                     semicolon_params = next(line_gen)
                     #tmp_feature = cls.Feature(location, direction)
-                    try:
-                        region_map[region].add_feature(feature,
-                                                       location,
-                                                       direction,
-                                                       semicolon_params)
-                    except KeyError:
-                        if feature == 'region':
-                            region_map.setdefault(region,
-                                                  Region(location[1],
-                                                         direction))
-                        else:
-                            region_map.setdefault(region,
-                                                  Region(None,
-                                                         direction))
-                            try:
-                                region_map[region].add_feature(feature,
-                                                               location,
-                                                               direction,
-                                                               semicolon_params)
-                            except KeyError:
-                                pass
-
+                    region_map = cls.add_feature(region_map, feature, location, direction)
                 except StopIteration:
                     warnings.warn('Invalid line: {} ... skipped'.format(count))
         #return cls.calc_missing_region_lengths(region_map)
         return region_map
+
+    def add_feature(region_map, feature, location, direction, semicolon_params):
+        try:
+            region_map[region].add_feature(feature,
+                                           location,
+                                           direction,
+                                           semicolon_params)
+        except KeyError:
+            if feature == 'region':
+                region_map.setdefault(region, Region(location[1], direction))
+            else:
+                region_map.setdefault(region, Region(None, direction))
+                try:
+                    region_map[region].add_feature(feature,
+                                                   location,
+                                                   direction,
+                                                   semicolon_params)
+                except KeyError:
+                    pass
+        return region_map
+
 
     @classmethod
     def calc_missing_region_lengths(cls, region_map):

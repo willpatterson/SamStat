@@ -15,28 +15,7 @@ import sys
 sys.path.append('..')
 
 from maps import RegionMap
-
-
-SamIn = namedtuple('InLine',
-                   ['alignment_number',
-                    'cigar',
-                    'reference_name_locations'])
-
-def read_alignment_map(path):
-    """Reads Alignment map SAM/BAM file into dictionary"""
-    qnames = {}
-    samfile = pysam.AlignmentFile(path, 'r')
-    for count, seq_line in enumerate(samfile):
-        qname = seq_line.query_name
-        qnames.setdefault(qname, SamIn([0], seq_line.cigar, []))
-        qnames[qname].alignment_number[0] += 1
-        try:
-            qnames[qname].reference_name_locations.append((seq_line.reference_name,
-                                                           seq_line.reference_start))
-        except ValueError:
-            warnings.warn('Reference Name is -1, Line #: {}'.format(count))
-
-    return qnames
+from maps import AlignmentMap
 
 OutLine = namedtuple('OutLine',
                      ['qname',
@@ -98,7 +77,7 @@ def format_line_obj(line_obj, ordered_attributes, delimiter):
 
 def run(in_sam, in_gff, outpath):
     """Runs SamStat functions"""
-    sam_data = read_alignment_map(in_sam)
+    sam_data = AlignmentMap(in_sam)
     region_map = RegionMap(in_gff)
     in_attributes = ['qname',
                      'alignment_number',
@@ -131,7 +110,7 @@ def main():
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
-OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v4.csv'
+OUT_CSV = '/disk/bioscratch/Will/Drop_Box/qstat_output.v1.csv'
 
 if __name__ == '__main__':
     start = timeit.default_timer()

@@ -34,7 +34,7 @@ def calculate_statistics(qname_data, region_map):
     for qname, qdata in qname_data.items():
         alignment_number = qdata.alignment_number[0]
         try:
-            raw_rnames = [x[0] for x in qdata.reference_name_locations]
+            raw_rnames = [x[0] for x in qdata.reference_names]
             unique_rnames = sorted({(x, raw_rnames.count(x)) for x in raw_rnames},
                                    key=itemgetter(1))
             unique_rnames_low = {x[0] for x in unique_rnames if x[1] == unique_rnames[0][1]}
@@ -46,7 +46,7 @@ def calculate_statistics(qname_data, region_map):
                 unique_rnames_low = len(unique_rnames_low)
                 unique_rnames_high = len(unique_rnames_high)
 
-            gff_classes = [region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]-1) for rname, location in qdata.reference_name_locations]
+            gff_classes = [region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]-1) for rname, location, _ in qdata.reference_names]
 
             total_exons, total_introns, total_combos, total_intergenes = 0, 0, 0, 0
             for classification in gff_classes:

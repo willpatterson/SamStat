@@ -77,29 +77,31 @@ class Region(object):
             #print('Gene: {}'.format(gene_name))
             self.genes.setdefault(next(split_semi), self.Gene(location, strand, []))
 
+
+    Classification = namedtuple('Classification',
+                                ['intergene', 'exons', 'introns', 'combos'])
     def classify_sequence(self, sequence_location):
         """Determines in read sequence is:
               exonic, intronic, intergenic, or a combination
         """
+        exons, introns, combos = 0, 0, 0
+
         matching_genes = self.gene_location_match(sequence_location)
-        try:
-            #for match in matching_genes:
-            #    match.value.features
-            features = self.genes[gene_match].features
-            for feat_range, _ in features:
-                start_flag = feat_range[0] < location_start < feat_range[1]
-                stop_flag = feat_range[0] < location_stop < feat_range[1]
+        if len(matching_genes) is 0:
+            return Classification(1, 0, 0, 0)
 
-                if stop_flag is True and start_flag is True:
-                    return key
-                elif stop_flag != start_flag:
-                    return 'combo'
-                else:
-                    return 'intron'
+        for match in matching_genes:
+            feature_matches = self.overlapping_coordinate_match(match.value.features, sequence_location)
+            if len(feature_matches) is 0:
+                introns += 1
 
-        except KeyError:
-            if location[1] < self.length:
-                return 'intergene'
+            for feature_match in feature_matches:
+                if feature_match.lower != feature_match.upper:
+                    combos += 1
+                elif feature_match.lower and feature_match.upper:
+                    exons += 1
+
+        return Classification(False, exons, introns, combos)
 
     def gene_location_match(self, sequence_location):
         """Finds the gene(s) that a sequence aligns too

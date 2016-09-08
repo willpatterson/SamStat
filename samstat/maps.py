@@ -63,7 +63,9 @@ class Region(object):
         """Adds either gene to self.genes or exon to a gene in self.genes"""
         if feature == 'exon':
             try:
-                self.genes[self.binary_coordinate_match(self.genes, location)].features.setdefault(location, strand)
+                matches = self.gene_match(location)
+                print(matches)
+                #self.genes[match].features.setdefault(location, strand)
             except KeyError:
                 warnings.warn('Exon found that doesnt match a gene') #TODO elaborate more
         elif feature == 'gene':
@@ -96,8 +98,8 @@ class Region(object):
         Walks up or down from a binary coordinate match"""
         matching_genes = []
         binary_match = self.binary_coordinate_match(self.genes, sequence_location)
-        overlapping_matches_upper = self.sequential_coordinate_match(self.genes, sequence_location, start=binary_match.index)
-        overlapping_matches_lower = self.sequential_coordinate_match(self.genes, sequence_location, start=binary_match.index, step=-1)
+        overlapping_matches_upper = self.sequential_coordinate_match(self.genes, sequence_location, start=binary_match.index+1)
+        overlapping_matches_lower = self.sequential_coordinate_match(self.genes, sequence_location, start=binary_match.index-1, step=-1)
         return [binary_match] + overlapping_matches_lower + overlapping_matches_upper
 
 

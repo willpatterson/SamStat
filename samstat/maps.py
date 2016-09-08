@@ -36,7 +36,8 @@ class AlignmentMap(dict):
                 amap[qname].rname_positions.append((seq_line.reference_name,
                                                     seq_line.reference_start))
             except ValueError:
-                warnings.warn('Reference Name is -1, Line #: {}'.format(count))
+                #warnings.warn('Reference Name is -1, Line #: {}'.format(count))
+                pass
 
         return amap
 
@@ -124,15 +125,19 @@ class Region(object):
         """Gets all matches in a sorted list of (possibly) overlapping
         coordinate pairs"""
         match1 = cls.binary_coordinate_match(sorted_coordinates,
-                                             sequence_location)
-        matches_upper = cls.sequential_coordinate_match(sorted_coordinates,
-                                                        coordinate_pair,
-                                                        start=match1.index+1)
-        matches_lower = cls.sequential_coordinate_match(sorted_coordinates,
-                                                        coordinate_pair,
-                                                        start=match1.index-1,
-                                                        step=-1)
-        return [match1] + matches_lower + matches_upper
+                                             coordinate_pair)
+        try:
+            matches_upper = cls.sequential_coordinate_match(sorted_coordinates,
+                                                            coordinate_pair,
+                                                            start=match1.index+1)
+            matches_lower = cls.sequential_coordinate_match(sorted_coordinates,
+                                                            coordinate_pair,
+                                                            start=match1.index-1,
+                                                            step=-1)
+            return [match1] + matches_lower + matches_upper
+        except TypeError:
+            return []
+
 
     @classmethod
     def binary_coordinate_match(cls, sorted_coordinates, coordinate_pair):
@@ -260,24 +265,11 @@ class RegionMap(object):
                                    location_stop):
         """Gets location classification from region_map"""
         try:
-            #self.rmap[region_name].binary_coordinate_match(
-            pass
+            return self.rmap[region_name].classify_sequence((location_start,
+                                                             location_stop))
         except KeyError:
-            warnings.warn('Region name {} not found'.format(region_name))
-        for key, features in self.rmap[region_name].features.items():
-            for feat_range, _ in features:
-                start_flag = location_start in range(feat_range[0],
-                                                     feat_range[1])
-                stop_flag = location_stop in range(feat_range[0],
-                                                   feat_range[1])
-
-                if stop_flag is True and start_flag is True:
-                    return key
-                elif stop_flag != start_flag:
-                    return 'combo'
-                else:
-                    return 'intron'
-
+            warnings.warn('Region name {} not found in the region map'.format(region_name))
+            return 0
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
@@ -285,11 +277,17 @@ OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v2.csv'
 
 if __name__ == '__main__':
 
-    start = timeit.default_timer()
+    test_start = timeit.default_timer()
     rm = RegionMap(IN_GFF)
-    end = timeit.default_timer()
+    rm_end = timeit.default_timer()
+    print('Region map load Time: {} seconds'.format(rm_end-test_start))
 
-    print('Total Program Time: {} seconds'.format(end-start))
+    am_start = timeit.default_timer()
+    am = AlignmentMap(IN_SAM)
+    am_end = timeit.default_timer()
+    print('Alignment map load Time: {} seconds'.format(am_end-am_start))
+
+    print('Total Run Time {} seconds'.format(am_end-test_start))
 
     rm_list = list(rm.rmap.items())
     cur = None
@@ -299,7 +297,7 @@ if __name__ == '__main__':
         genes = list(rm_list[i][1].genes.items())
         if len(genes) > 100:
             break
-    print(genes)
+    #print(genes)
     #print(rm_list[0][1].genes)
     #print(len(rm_list))
 

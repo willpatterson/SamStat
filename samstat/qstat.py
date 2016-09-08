@@ -68,17 +68,23 @@ def calculate_statistics(qname_data, region_map):
                 unique_rnames_high = len(unique_rnames_high)
 
             gff_classes = [region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]-1) for rname, location in qdata.rname_positions]
-            gff_classes = {x: gff_classes.count(x) for x in gff_classes}
+
+            total_exons, total_introns, total_combos, total_intergenes = 0, 0, 0, 0
+            for classification in gff_classes:
+                total_exons += classification.exons
+                total_introns += classification.introns
+                total_intergenes += classification.intergene
+                total_combos += classification.combos
 
             yield OutLine(qname,
                           alignment_number,
                           unique_rnames_low,
                           unique_rnames_high,
                           unique_rnames_number,
-                          gff_classes.get('exon', 0),
-                          gff_classes.get('intron', 0),
-                          gff_classes.get('intergene', 0),
-                          gff_classes.get('combo', 0))
+                          total_exons,
+                          total_introns,
+                          total_intergenes,
+                          total_combos)
 
         except IndexError:
             warnings.warn('QNAME data cannot be read, Skipping: {}'.format(qname))
@@ -125,7 +131,7 @@ def main():
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
-OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v2.csv'
+OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v4.csv'
 
 if __name__ == '__main__':
     start = timeit.default_timer()

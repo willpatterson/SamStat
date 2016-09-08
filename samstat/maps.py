@@ -83,6 +83,8 @@ class Region(object):
         """
         matching_genes = self.gene_location_match(sequence_location)
         try:
+            #for match in matching_genes:
+            #    match.value.features
             features = self.genes[gene_match].features
             for feat_range, _ in features:
                 start_flag = feat_range[0] < location_start < feat_range[1]
@@ -103,12 +105,8 @@ class Region(object):
         """Finds the gene(s) that a sequence aligns too
         Walks up or down from a binary coordinate match"""
         sorted_genes = sorted(self.genes.values())
-        matching_genes = []
-        binary_match = self.binary_coordinate_match(sorted_genes, sequence_location)
-        overlapping_matches_upper = self.sequential_coordinate_match(sorted_genes, sequence_location, start=binary_match.index+1)
-        overlapping_matches_lower = self.sequential_coordinate_match(sorted_genes, sequence_location, start=binary_match.index-1, step=-1)
-        return [binary_match] + overlapping_matches_lower + overlapping_matches_upper
-
+        return self.overlapping_coordinate_match(sorted_genes,
+                                                 sequence_location)
 
     @staticmethod
     def coordinate_relations(coordinate_pair, relation_coordinate_pair):
@@ -119,6 +117,21 @@ class Region(object):
                 bool(coordinate_pair[0] <= relation_coordinate_pair[1] <=  coordinate_pair[1]))
 
     Match = namedtuple('Match', ['index', 'lower', 'upper', 'value'])
+    @classmethod
+    def overlapping_coordinate_match(cls, sorted_coordinates, coordinate_pair):
+        """Gets all matches in a sorted list of (possibly) overlapping
+        coordinate pairs"""
+        match1 = cls.binary_coordinate_match(sorted_coordinates,
+                                             sequence_location)
+        matches_upper = cls.sequential_coordinate_match(sorted_coordinates,
+                                                        coordinate_pair,
+                                                        start=match1.index+1)
+        matches_lower = cls.sequential_coordinate_match(sorted_coordinates,
+                                                        coordinate_pair,
+                                                        start=match1.index-1,
+                                                        step=-1)
+        return [match1] + matches_lower + matches_upper
+
     @classmethod
     def binary_coordinate_match(cls, sorted_coordinates, coordinate_pair):
         """Trys to figure out if the coordinate_pair is in an ordered list of

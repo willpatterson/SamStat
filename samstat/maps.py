@@ -26,11 +26,10 @@ class AlignmentMap(dict):
         samfile = pysam.AlignmentFile(path, 'r')
         for count, seq_line in enumerate(samfile):
             qname = seq_line.query_name
-            amap.setdefault(qname,
-                            cls.SamIn([0],
-                                      seq_line.flag,
-                                      seq_line.cigar,
-                                      []))
+            amap.setdefault(qname, cls.SamIn([0],
+                                             seq_line.flag,
+                                             seq_line.cigar,
+                                             []))
             amap[qname].alignment_number[0] += 1
             try:
                 amap[qname].reference_names.append((seq_line.reference_name,
@@ -78,8 +77,8 @@ class Region(object):
             #gene_name = next(split_semi)
             #print('Gene: {}'.format(gene_name))
             self.genes.setdefault(next(split_semi), self.Gene(location, direction, []))
-
-    def add_sequence
+        elif feature == 'sequence':
+            self.genes.setdefault(location, direction)
 
     Classification = namedtuple('Classification',
                                 ['intergene', 'exons', 'introns', 'combos'])
@@ -192,12 +191,15 @@ class RegionMap(object):
         {'RNAME': [gene: (([Features: (location, direction),], (coordinates: 0, 1))], Length}
     """
     Region = namedtuple('Region', ['genes', 'length'])
-    def __init__(self, gff_path, accepted_features='exon'):
+    def __init__(self, gff_path=None, accepted_features='exon'):
         if isinstance(accepted_features, str):
             accepted_features = tuple([accepted_features])
         self.feature_types = accepted_features
         print(accepted_features)
-        self.rmap = self.read_gff(gff_path, feature_types=self.feature_types)
+        if gff_path is None:
+            self.rmap = dict()
+        else:
+            self.rmap = self.read_gff(gff_path, feature_types=self.feature_types)
 
     @classmethod
     def read_gff(cls, gff_path, feature_types):
@@ -219,23 +221,26 @@ class RegionMap(object):
                     next(line_gen)
                     semicolon_params = next(line_gen)
                     #tmp_feature = cls.Feature(location, direction)
-                    region_map = cls.add_feature(region_map, feature, location, direction)
+                    region_map = cls.add_feature(region_map, region, feature, location, direction, semicolon_params)
                 except StopIteration:
                     warnings.warn('Invalid line: {} ... skipped'.format(count))
         #return cls.calc_missing_region_lengths(region_map)
         return region_map
 
-    def add_feature(region_map, feature, location, direction, semicolon_params):
+    @staticmethod
+    def add_feature(region_map, region, feature, location, direction, semicolon_params):
         try:
             region_map[region].add_feature(feature,
                                            location,
                                            direction,
                                            semicolon_params)
         except KeyError:
-            if feature == 'region':
-                region_map.setdefault(region, Region(location[1], direction))
-            else:
-                region_map.setdefault(region, Region(None, direction))
+                try:
+                    region_map.setdefault(region, Region(location[1], direction))
+                except Exception as e:
+                    print(e)
+                    region_map.setdefault(region, Region(None, direction))
+
                 try:
                     region_map[region].add_feature(feature,
                                                    location,
@@ -280,26 +285,29 @@ class RegionMap(object):
         Directions = namedtuple('Directions', ['forwards', 'reverses'])
         def convert_direction(direction):
             if direction is 0 or direction is '+':
-                direction = True
+                return True
             elif direction is 16 or direction is '-':
-                direction = False
+                return False
             else:
-                direction = None
+                return None
 
         region = self.rmap[region_name]
         region_direction = convert_direction(region.direction)
         sequence_direction = convert_direction(sequence_direction)
 
         raw_directions = []
-        matching_genes = self.gene_location_match(sequence_location)
-        for match in self.gene_location_match(sequence_location):
-            match_direction = convert_direction(match.direction)
+        matching_genes = region.gene_location_match(sequence_location)
+        for match in matching_genes:
+            match_direction = convert_direction(match.value.direction)
             feature_matches = region.overlapping_coordinate_match(match.value.features, sequence_location)
             if len(feature_matches) is 0:
                 raw_directions.append((region_direction, match_direction, sequence_direction))
             for feature_match in feature_matches:
-                feature_direction = convert_direction(feature_match.direction)
+                feature_direction = convert_direction(feature_match.value.direction)
                 raw_directions.append((region_direction, match_direction, feature_direction, sequence_direction))
+
+        if len(matching_genes) is 0:
+            raw_directions = (region_direction, sequence_direction)
 
         directions = [all(match) for match in raw_directions]
         return Directions(forwards=directions.count(True), reverses=directions.count(False))

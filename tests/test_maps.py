@@ -13,6 +13,10 @@ class TestRegionMap(unittest.TestCase):
         cls.rm = RegionMap(IN_GFF)
         cls.rm_list = list(rm.rmap.items())
 
+
+COORDS = {(1,10): '', (20, 30): '', (40, 50):'', (60, 70): '', (80, 100): ''}
+FULL_MATCH_BINARY = (20, 30)
+
 COORD = (5, 15)
 FULL_MATCH = (5, 15)
 LOWER_MATCH = (10, 20)
@@ -36,6 +40,13 @@ class TestRegion(unittest.TestCase):
         lower, upper = Region.coordinate_relations(COORD, UPPER_MATCH)
         self.assertFalse(lower)
         self.assertTrue(upper)
+
+    def test_binary_coordinate_match_full(self):
+        match = Region.binary_coordinate_match(COORDS, FULL_MATCH_BINARY)
+        self.assertTrue(match.lower)
+        self.assertTrue(match.upper)
+        self.assertEquals(FULL_MATCH_BINARY, match.value)
+        self.assertEquals(2, match.index)
 
 
 

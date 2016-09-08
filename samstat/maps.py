@@ -298,6 +298,10 @@ class RegionMap(object):
                 (((True == True) == False) == False)) is True
             """
             try:
+                values = list(values)
+            except TypeError:
+                return values
+            try:
                 outcome = values[0] == values[1]
             except IndexError:
                 return values[0]

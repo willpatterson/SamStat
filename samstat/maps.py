@@ -88,7 +88,7 @@ class Region(object):
 
         matching_genes = self.gene_location_match(sequence_location)
         if len(matching_genes) is 0:
-            return Classification(1, 0, 0, 0)
+            return self.Classification(1, 0, 0, 0)
 
         for match in matching_genes:
             feature_matches = self.overlapping_coordinate_match(match.value.features, sequence_location)
@@ -101,7 +101,7 @@ class Region(object):
                 elif feature_match.lower and feature_match.upper:
                     exons += 1
 
-        return Classification(False, exons, introns, combos)
+        return self.Classification(False, exons, introns, combos)
 
     def gene_location_match(self, sequence_location):
         """Finds the gene(s) that a sequence aligns too

@@ -53,14 +53,14 @@ def split_gen(s, delims):
 class Region(object):
     """Class that handels the region information in GFF3 files"""
 
-    Gene = namedtuple('Gene', ['location', 'strand', 'features'])
-    Feature = namedtuple('Feature', ['location', 'strand'])
-    def __init__(self, length, strand):
+    Gene = namedtuple('Gene', ['location', 'direction', 'features'])
+    Feature = namedtuple('Feature', ['location', 'direction'])
+    def __init__(self, length, direction):
         self.length = length
-        self.strand = strand
+        self.direction = direction
         self.genes = dict()
 
-    def add_feature(self, feature, location, strand, semicolon_params):
+    def add_feature(self, feature, location, direction, semicolon_params):
         """Adds either gene to self.genes or exon to a gene in self.genes
         """
         split_semi = split_gen(semicolon_params, ',:;=')
@@ -69,14 +69,14 @@ class Region(object):
                 for i in range(6): next(split_semi)
                 #parent_gene = next(split_semi)
                 #print('Exon: {}'.format(parent_gene))
-                bisect.insort_left(self.genes[next(split_semi)].features, self.Feature(location, strand))
+                bisect.insort_left(self.genes[next(split_semi)].features, self.Feature(location, direction))
             except KeyError:
                 warnings.warn('Exon found that doesnt match a gene') #TODO elaborate more
         elif feature == 'gene':
             for i in range(4): next(split_semi)
             #gene_name = next(split_semi)
             #print('Gene: {}'.format(gene_name))
-            self.genes.setdefault(next(split_semi), self.Gene(location, strand, []))
+            self.genes.setdefault(next(split_semi), self.Gene(location, direction, []))
 
 
     Classification = namedtuple('Classification',
@@ -103,6 +103,28 @@ class Region(object):
                     exons += 1
 
         return self.Classification(False, exons, introns, combos)
+
+    def get_true_direction(self, sequence_location, relative_sequence_direction):
+        """Gets the true direction of a sequence by the directions of it's
+        parent sequences in the region map
+        """
+        def convert_direction(direction):
+            if direction is 0 or direction is '+':
+                direction = True
+            elif direction is 16 or direction is '-':
+                direction = False
+            else:
+                direction = None
+
+        directions = convert_
+        matching_genes = self.gene_location_match(sequence_location)
+        if len(matching_genes) is 0:
+            return self.Classification(1, 0, 0, 0)
+        for match in self.gene_location_match(sequence_location):
+            feature_matches = self.overlapping_coordinate_match(match.value.features, sequence_location)
+
+            if len(feature_matches) is 0:
+
 
     def gene_location_match(self, sequence_location):
         """Finds the gene(s) that a sequence aligns too
@@ -187,7 +209,7 @@ class RegionMap(object):
     used to determine gene attribute types from sequence location ranges
 
     Region Map Structure:
-        {'RNAME': [gene: (([Features: (location, strand),], (coordinates: 0, 1))], Length}
+        {'RNAME': [gene: (([Features: (location, direction),], (coordinates: 0, 1))], Length}
     """
     Region = namedtuple('Region', ['genes', 'length'])
     def __init__(self, gff_path, accepted_features='exon'):
@@ -213,28 +235,28 @@ class RegionMap(object):
                     feature = next(line_gen)
                     location = (int(next(line_gen)), int(next(line_gen)))
                     next(line_gen)
-                    strand = next(line_gen)
+                    direction = next(line_gen)
                     next(line_gen)
                     semicolon_params = next(line_gen)
-                    #tmp_feature = cls.Feature(location, strand)
+                    #tmp_feature = cls.Feature(location, direction)
                     try:
                         region_map[region].add_feature(feature,
                                                        location,
-                                                       strand,
+                                                       direction,
                                                        semicolon_params)
                     except KeyError:
                         if feature == 'region':
                             region_map.setdefault(region,
                                                   Region(location[1],
-                                                         strand))
+                                                         direction))
                         else:
                             region_map.setdefault(region,
                                                   Region(None,
-                                                         strand))
+                                                         direction))
                             try:
                                 region_map[region].add_feature(feature,
                                                                location,
-                                                               strand,
+                                                               direction,
                                                                semicolon_params)
                             except KeyError:
                                 pass

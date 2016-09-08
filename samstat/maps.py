@@ -66,17 +66,16 @@ class Region(object):
         if feature == 'exon':
             try:
                 for i in range(6): next(split_semi)
-                parent_gene = next(split_semi)
-                print('Exon: {}'.format(parent_gene))
-                self.genes[parent_gene].features.setdefault(location, strand)
+                #parent_gene = next(split_semi)
+                #print('Exon: {}'.format(parent_gene))
+                self.genes[next(split_semi)].features.setdefault(location, strand)
             except KeyError:
                 warnings.warn('Exon found that doesnt match a gene') #TODO elaborate more
         elif feature == 'gene':
             for i in range(4): next(split_semi)
-            gene_name = next(split_semi)
-            print('Gene: {}'.format(gene_name))
-            #self.genes.setdefault(next(split_semi), self.Gene(location, strand, dict()))
-            self.genes.setdefault(gene_name, self.Gene(location, strand, dict()))
+            #gene_name = next(split_semi)
+            #print('Gene: {}'.format(gene_name))
+            self.genes.setdefault(next(split_semi), self.Gene(location, strand, dict()))
 
     def classify_sequence(self, location):
         """Determines in read sequence is:

@@ -14,7 +14,13 @@ class TestRegionMap(unittest.TestCase):
         cls.rm_list = list(rm.rmap.items())
 
 
-COORDS = {(1,10): '', (20, 30): '', (40, 50):'', (60, 70): '', (80, 100): ''}
+Gene = Region.Gene
+COORDS = {'asedf':Gene((1,10),1,1),
+          'ade':Gene((20, 30),1,1),
+          '4d':Gene((40, 50),1,1),
+          '34d':Gene((60, 70),1,1),
+          'w3':Gene((80, 100),1,1)}
+
 FULL_MATCH_BINARY = (20, 30)
 
 COORD = (5, 15)
@@ -42,10 +48,11 @@ class TestRegion(unittest.TestCase):
         self.assertTrue(upper)
 
     def test_binary_coordinate_match_full(self):
-        match = Region.binary_coordinate_match(COORDS, FULL_MATCH_BINARY)
+        sorted_coords = sorted(COORDS.values())
+        match = Region.binary_coordinate_match(sorted_coords, FULL_MATCH_BINARY)
         self.assertTrue(match.lower)
         self.assertTrue(match.upper)
-        self.assertEqual(FULL_MATCH_BINARY, match.value)
+        self.assertEqual(FULL_MATCH_BINARY, match.value.location)
         self.assertEqual(1, match.index)
 
 

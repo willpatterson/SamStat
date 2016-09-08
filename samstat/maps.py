@@ -107,8 +107,8 @@ class Region(object):
         """Returns weather the relation_coordinate_pair's uppper and lower
         bounds are within coordinate_pair
         """
-        return (bool(coordinate_pair[0] < relation_coordinate_pair[0] < coordinate_pair[1]),
-                bool(coordinate_pair[0] < relation_coordinate_pair[1] < coordinate_pair[1]))
+        return (bool(coordinate_pair[0] <= relation_coordinate_pair[0] <= coordinate_pair[1]),
+                bool(coordinate_pair[0] <= relation_coordinate_pair[1] <=  coordinate_pair[1]))
 
     Match = namedtuple('Match', ['index', 'lower', 'upper', 'value'])
     @classmethod
@@ -267,7 +267,7 @@ if __name__ == '__main__':
     print('Total Program Time: {} seconds'.format(end-start))
 
     rm_list = list(rm.rmap.items())
-    print(rm_list[0])
+    print(rm_list[0][1].genes)
     print(len(rm_list))
 
 

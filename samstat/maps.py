@@ -52,24 +52,31 @@ def split_gen(s, delims):
 class Region(object):
     """Class that handels the region information in GFF3 files"""
 
-    Gene = namedtuple('Gene', ['features', 'strand'])
+    Gene = namedtuple('Gene', ['location', 'strand', 'features'])
     Feature = namedtuple('Feature', ['location', 'strand'])
     def __init__(self, length, strand):
         self.length = length
         self.strand = strand
         self.genes = dict()
 
-    def add_feature(self, feature, location, strand):
-        """Adds either gene to self.genes or exon to a gene in self.genes"""
+    def add_feature(self, feature, location, strand, semicolon_params):
+        """Adds either gene to self.genes or exon to a gene in self.genes
+        """
+        split_semi = split_gen(semicolon_params, ',:;=')
         if feature == 'exon':
             try:
-                matches = self.gene_match(location)
-                print(matches)
-                #self.genes[match].features.setdefault(location, strand)
+                for i in range(6): next(split_semi)
+                parent_gene = next(split_semi)
+                print('Exon: {}'.format(parent_gene))
+                self.genes[parent_gene].features.setdefault(location, strand)
             except KeyError:
                 warnings.warn('Exon found that doesnt match a gene') #TODO elaborate more
         elif feature == 'gene':
-            self.genes.setdefault(location, self.Gene(dict(), strand))
+            for i in range(4): next(split_semi)
+            gene_name = next(split_semi)
+            print('Gene: {}'.format(gene_name))
+            #self.genes.setdefault(next(split_semi), self.Gene(location, strand, dict()))
+            self.genes.setdefault(gene_name, self.Gene(location, strand, dict()))
 
     def classify_read(self, location):
         """Determines in read sequence is:
@@ -93,7 +100,7 @@ class Region(object):
             if location[1] < self.length:
                 return 'intergene'
 
-    def gene_match(self, sequence_location):
+    def gene_location_match(self, sequence_location):
         """Finds the gene(s) that a sequence aligns too
         Walks up or down from a binary coordinate match"""
         matching_genes = []
@@ -189,11 +196,14 @@ class RegionMap(object):
                     location = (int(next(line_gen)), int(next(line_gen)))
                     next(line_gen)
                     strand = next(line_gen)
+                    next(line_gen)
+                    semicolon_params = next(line_gen)
                     #tmp_feature = cls.Feature(location, strand)
                     try:
                         region_map[region].add_feature(feature,
                                                        location,
-                                                       strand)
+                                                       strand,
+                                                       semicolon_params)
                     except KeyError:
                         if feature == 'region':
                             region_map.setdefault(region,
@@ -206,7 +216,8 @@ class RegionMap(object):
                             try:
                                 region_map[region].add_feature(feature,
                                                                location,
-                                                               strand)
+                                                               strand,
+                                                               semicolon_params)
                             except KeyError:
                                 pass
 
@@ -268,7 +279,15 @@ if __name__ == '__main__':
     print('Total Program Time: {} seconds'.format(end-start))
 
     rm_list = list(rm.rmap.items())
-    print(rm_list[0][1].genes)
-    print(len(rm_list))
+    cur = None
+    genes = None
+    for i in range(10000):
+        cur = rm_list[i]
+        genes = list(rm_list[i][1].genes.items())
+        if len(genes) > 100:
+            break
+    print(genes)
+    #print(rm_list[0][1].genes)
+    #print(len(rm_list))
 
 

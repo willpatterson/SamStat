@@ -20,7 +20,7 @@ from maps import RegionMap
 SamIn = namedtuple('InLine',
                    ['alignment_number',
                     'cigar',
-                    'rname_positions'])
+                    'reference_name_locations'])
 
 def read_alignment_map(path):
     """Reads Alignment map SAM/BAM file into dictionary"""
@@ -31,8 +31,8 @@ def read_alignment_map(path):
         qnames.setdefault(qname, SamIn([0], seq_line.cigar, []))
         qnames[qname].alignment_number[0] += 1
         try:
-            qnames[qname].rname_positions.append((seq_line.reference_name,
-                                                  seq_line.reference_start))
+            qnames[qname].reference_name_locations.append((seq_line.reference_name,
+                                                           seq_line.reference_start))
         except ValueError:
             warnings.warn('Reference Name is -1, Line #: {}'.format(count))
 
@@ -55,7 +55,7 @@ def calculate_statistics(qname_data, region_map):
     for qname, qdata in qname_data.items():
         alignment_number = qdata.alignment_number[0]
         try:
-            raw_rnames = [x[0] for x in qdata.rname_positions]
+            raw_rnames = [x[0] for x in qdata.reference_name_locations]
             unique_rnames = sorted({(x, raw_rnames.count(x)) for x in raw_rnames},
                                    key=itemgetter(1))
             unique_rnames_low = {x[0] for x in unique_rnames if x[1] == unique_rnames[0][1]}
@@ -67,7 +67,7 @@ def calculate_statistics(qname_data, region_map):
                 unique_rnames_low = len(unique_rnames_low)
                 unique_rnames_high = len(unique_rnames_high)
 
-            gff_classes = [region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]-1) for rname, location in qdata.rname_positions]
+            gff_classes = [region_map.get_location_clasification(rname, location, location+qdata.cigar[0][1]-1) for rname, location in qdata.reference_name_locations]
 
             total_exons, total_introns, total_combos, total_intergenes = 0, 0, 0, 0
             for classification in gff_classes:

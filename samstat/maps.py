@@ -14,7 +14,7 @@ class AlignmentMap(dict):
                        ['alignment_number',
                         'flag',
                         'cigar',
-                        'rname_positions'])
+                        'reference_name_locations'])
 
     def __init__(self, path):
         self.update(self.read_alignment_map(path))
@@ -28,13 +28,13 @@ class AlignmentMap(dict):
             qname = seq_line.query_name
             amap.setdefault(qname,
                             cls.SamIn([0],
-                            seq_line.flag,
-                            seq_line.cigar,
-                            []))
+                                      seq_line.flag,
+                                      seq_line.cigar,
+                                      []))
             amap[qname].alignment_number[0] += 1
             try:
-                amap[qname].rname_positions.append((seq_line.reference_name,
-                                                    seq_line.reference_start))
+                amap[qname].reference_name_locations.append((seq_line.reference_name,
+                                                             seq_line.reference_start))
             except ValueError:
                 #warnings.warn('Reference Name is -1, Line #: {}'.format(count))
                 pass

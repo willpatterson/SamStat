@@ -65,7 +65,7 @@ class Region(object):
             try:
                 self.genes[self.binary_coordinate_match(self.genes, location)].features.setdefault(location, strand)
             except KeyError:
-                warnings.warn('warning') #TODO
+                warnings.warn('Exon found that doesnt match a gene') #TODO elaborate more
         elif feature == 'gene':
             self.genes.setdefault(location, self.Gene(dict(), strand))
 

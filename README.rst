@@ -30,9 +30,13 @@ Usage:
 
 ::
 
-  #qstat usage
-  qstat <SAM_filepath> <GFF3_filepath> <Out_filepath>
-  qstat --help 
-  qstat -h
+  #Help
+  samstat --help 
+  samstat -h
 
-  #truedir useage coming soon
+  #qstat usage
+  samstat qstat <SAM_filepath> <GFF3_filepath> <Out_filepath>
+
+  #truedir usage
+  samstat truedir <SAM_filepath> <GFF3_filepath> <Out_filepath>
+

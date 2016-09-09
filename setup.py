@@ -7,5 +7,5 @@ setup(name='SamLink',
       author='William Patterson, Amie Romney',
       packages=find_packages(),
       install_requires=['pysam'],
-      entry_points={"console_scripts": ["qstat=samstat.qstat:main"],})
+      entry_points={"console_scripts": ["samstat=samstat.samstat:main"],})
 

@@ -67,18 +67,12 @@ class Region(object):
         if feature == 'exon':
             try:
                 for i in range(6): next(split_semi)
-                #parent_gene = next(split_semi)
-                #print('Exon: {}'.format(parent_gene))
                 bisect.insort_left(self.genes[next(split_semi)].features, self.Feature(location, direction))
             except KeyError:
                 warnings.warn('Exon found that doesnt match a gene') #TODO elaborate more
         elif feature == 'gene':
             for i in range(4): next(split_semi)
-            #gene_name = next(split_semi)
-            #print('Gene: {}'.format(gene_name))
             self.genes.setdefault(next(split_semi), self.Gene(location, direction, []))
-        elif feature == 'sequence':
-            self.genes.setdefault(location, direction)
 
     Classification = namedtuple('Classification',
                                 ['intergene', 'exons', 'introns', 'combos'])
@@ -139,7 +133,6 @@ class Region(object):
         except TypeError:
             return []
 
-
     @classmethod
     def binary_coordinate_match(cls, sorted_coordinates, coordinate_pair):
         """Trys to figure out if the coordinate_pair is in an ordered list of
@@ -182,7 +175,6 @@ class Region(object):
             else:
                 return matches
 
-
 class RegionMap(object):
     """Reads creates a feature location map from a gff file that can be
     used to determine gene attribute types from sequence location ranges
@@ -220,7 +212,6 @@ class RegionMap(object):
                     direction = next(line_gen)
                     next(line_gen)
                     semicolon_params = next(line_gen)
-                    #tmp_feature = cls.Feature(location, direction)
                     region_map = cls.add_feature(region_map, region, feature, location, direction, semicolon_params)
                 except StopIteration:
                     warnings.warn('Invalid line: {} ... skipped'.format(count))
@@ -249,7 +240,6 @@ class RegionMap(object):
                 except KeyError:
                     pass
         return region_map
-
 
     @classmethod
     def calc_missing_region_lengths(cls, region_map):
@@ -337,7 +327,6 @@ IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'
 OUT_CSV = '/disk/bioscratch/Will/Drop_Box/SamStat_output.v2.csv'
 
 if __name__ == '__main__':
-
     test_start = timeit.default_timer()
     rm = RegionMap(IN_GFF)
     rm_end = timeit.default_timer()
@@ -358,8 +347,3 @@ if __name__ == '__main__':
         genes = list(rm_list[i][1].genes.items())
         if len(genes) > 100:
             break
-    #print(genes)
-    #print(rm_list[0][1].genes)
-    #print(len(rm_list))
-
-

@@ -289,7 +289,13 @@ class RegionMap(object):
         except IndexError:
             return outcome
 
+    @staticmethod
     def convert_direction(direction):
+        """Converts directions from gff3 files (strand) and sam files (flag)
+        to boolean values.
+        True is forward
+        False is revers
+        """
         if direction is 0 or direction is '+':
             return True
         elif direction is 16 or direction is '-':

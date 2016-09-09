@@ -9,8 +9,8 @@ from operator import itemgetter
 import sys
 sys.path.append('..')
 
-from maps import RegionMap
-from maps import AlignmentMap
+from samstat.maps import RegionMap
+from samstat.maps import AlignmentMap
 
 
 true_dir_out_values = ['qname', 'rname', 'forward', 'reverse']
@@ -115,10 +115,12 @@ def main():
         warnings.warn(('Warning output path already exists, data will be '
                        'overwritten. Path {}').format(args.out_path))
 
-    if args.operation is 'qstat':
+    if args.operation == 'qstat':
         run(args.sam_file, args.gff_file, args.out_path, qstat_out_values, calculate_qstats)
-    elif args.operation is 'truedir':
+    elif args.operation == 'truedir':
         run(args.sam_file, args.gff_file, args.out_path, true_dir_out_values, calculate_truedirs)
+    else:
+        raise argparse.ArgumentTypeError('Operation type {} is invalid'.format(args.operation))
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 IN_SAM = '/disk/bioscratch/Will/Drop_Box/HPF_small_RNA_022216.sam'

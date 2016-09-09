@@ -268,58 +268,59 @@ class RegionMap(object):
             warnings.warn('Region name {} not found in the region map'.format(region_name))
             return 0
 
+    @staticmethod
+    def eqiv(values):
+        """Recursive function that does eqivalent boolean operations
+        Example:
+            Input: [True, True, False, False]
+            (((True == True) == False) == False)) is True
+        """
+        try:
+            values = list(values)
+        except TypeError:
+            return values
+        try:
+            outcome = values[0] == values[1]
+        except IndexError:
+            return values[0]
+        try:
+            new_values = [outcome] + values[2:]
+            return eqiv(new_values)
+        except IndexError:
+            return outcome
+
+    def convert_direction(direction):
+        if direction is 0 or direction is '+':
+            return True
+        elif direction is 16 or direction is '-':
+            return False
+        else:
+            return None
+
     def get_true_directions(self, region_name, sequence_location, sequence_direction):
         """Gets the true direction of a sequence by the directions of it's
         parent sequences in the region map
         """
         Directions = namedtuple('Directions', ['forwards', 'reverses'])
-        def convert_direction(direction):
-            if direction is 0 or direction is '+':
-                return True
-            elif direction is 16 or direction is '-':
-                return False
-            else:
-                return None
-
-        def eqiv(values):
-            """Recursive function that does eqivalent boolean operations
-            Example:
-                Input: [True, True, False, False]
-                (((True == True) == False) == False)) is True
-            """
-            try:
-                values = list(values)
-            except TypeError:
-                return values
-            try:
-                outcome = values[0] == values[1]
-            except IndexError:
-                return values[0]
-            try:
-                new_values = [outcome] + values[2:]
-                return eqiv(new_values)
-            except IndexError:
-                return outcome
-
         region = self.rmap[region_name]
-        region_direction = convert_direction(region.direction)
-        sequence_direction = convert_direction(sequence_direction)
+        region_direction = self.convert_direction(region.direction)
+        sequence_direction = self.convert_direction(sequence_direction)
 
         raw_directions = []
         matching_genes = region.gene_location_match(sequence_location)
         for match in matching_genes:
-            match_direction = convert_direction(match.value.direction)
+            match_direction = self.convert_direction(match.value.direction)
             feature_matches = region.overlapping_coordinate_match(match.value.features, sequence_location)
             if len(feature_matches) is 0:
                 raw_directions.append((region_direction, match_direction, sequence_direction))
             for feature_match in feature_matches:
-                feature_direction = convert_direction(feature_match.value.direction)
+                feature_direction = self.convert_direction(feature_match.value.direction)
                 raw_directions.append((region_direction, match_direction, feature_direction, sequence_direction))
 
         if len(matching_genes) is 0:
             raw_directions = (region_direction, sequence_direction)
 
-        directions = [eqiv(match) for match in raw_directions]
+        directions = [self.eqiv(match) for match in raw_directions]
         return Directions(forwards=directions.count(True), reverses=directions.count(False))
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'

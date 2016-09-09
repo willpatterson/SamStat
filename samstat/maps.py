@@ -50,6 +50,26 @@ def split_gen(s, delims):
             start = i+1
     yield s[start:]
 
+def eqiv(values):
+    """Recursive function that does eqivalent boolean operations
+    Example:
+        Input: [True, True, False, False]
+        (((True == True) == False) == False)) is True
+    """
+    try:
+        values = list(values)
+    except TypeError:
+        return values
+    try:
+        outcome = values[0] == values[1]
+    except IndexError:
+        return values[0]
+    try:
+        new_values = [outcome] + values[2:]
+        return eqiv(new_values)
+    except IndexError:
+        return outcome
+
 class Region(object):
     """Class that handels the region information in GFF3 files"""
 
@@ -269,27 +289,6 @@ class RegionMap(object):
             return 0
 
     @staticmethod
-    def eqiv(values):
-        """Recursive function that does eqivalent boolean operations
-        Example:
-            Input: [True, True, False, False]
-            (((True == True) == False) == False)) is True
-        """
-        try:
-            values = list(values)
-        except TypeError:
-            return values
-        try:
-            outcome = values[0] == values[1]
-        except IndexError:
-            return values[0]
-        try:
-            new_values = [outcome] + values[2:]
-            return eqiv(new_values)
-        except IndexError:
-            return outcome
-
-    @staticmethod
     def convert_direction(direction):
         """Converts directions from gff3 files (strand) and sam files (flag)
         to boolean values.
@@ -326,7 +325,7 @@ class RegionMap(object):
         if len(matching_genes) is 0:
             raw_directions = (region_direction, sequence_direction)
 
-        directions = [self.eqiv(match) for match in raw_directions]
+        directions = [eqiv(match) for match in raw_directions]
         return Directions(forwards=directions.count(True), reverses=directions.count(False))
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'

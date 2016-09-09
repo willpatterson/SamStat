@@ -2,16 +2,34 @@ import unittest
 import os
 import warnings
 
-from samstat.maps import Region
 from samstat.maps import RegionMap
+from samstat.maps import Region
+from samstat.maps import eqiv
 
 IN_GFF = '/disk/bioscratch/Will/Drop_Box/GCF_001266775.1_Austrofundulus_limnaeus-1.0_genomic_andMITO.gff'
 class TestRegionMap(unittest.TestCase):
     """Test Class for RegionMap"""
+    '''
     def setUpClass(cls):
         """Reads in GFF file and creates Region Map object"""
         cls.rm = RegionMap(IN_GFF)
         cls.rm_list = list(rm.rmap.items())
+    '''
+    pass
+
+IN_BOOLEAN_VALUES_TRUE = [True, True, True, True]
+IN_BOOLEAN_VALUES_FALSE = [False, True, True, True]
+IN_BOOLEAN_VALUES_TRUE_FALSE = [False, True, True, False]
+class TestEqiv(unittest.TestCase):
+    def test_eqiv_true(self):
+        """Tests the eqiv function with all trues"""
+        self.assertTrue(eqiv(IN_BOOLEAN_VALUES_TRUE))
+
+    def test_eqiv_false(self):
+        self.assertFalse(eqiv(IN_BOOLEAN_VALUES_FALSE))
+
+    def test_eqiv_true_false(self):
+        self.assertTrue(eqiv(IN_BOOLEAN_VALUES_TRUE_FALSE))
 
 
 Gene = Region.Gene
@@ -59,7 +77,7 @@ class TestRegion(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    test_classes = (TestRegionMap, TestRegion)
+    test_classes = (TestEqiv, TestRegionMap, TestRegion)
     test_suite = unittest.TestSuite()
     for test_class in test_classes:
         test_suite.addTest(test_class())

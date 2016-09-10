@@ -20,6 +20,9 @@ class TestRegionMap(unittest.TestCase):
 IN_BOOLEAN_VALUES_TRUE = [True, True, True, True]
 IN_BOOLEAN_VALUES_FALSE = [False, True, True, True]
 IN_BOOLEAN_VALUES_TRUE_FALSE = [False, True, True, False]
+IN_BOOLEAN_VALUES_TRUE_ODD = [True, True, True]
+IN_BOOLEAN_VALUES_FALSE_ODD = [False, True, True]
+IN_BOOLEAN_VALUES_TRUE_FALSE_ODD = [False, True, False]
 class TestEqiv(unittest.TestCase):
     def test_eqiv_true(self):
         """Tests the eqiv function with all trues"""
@@ -31,6 +34,14 @@ class TestEqiv(unittest.TestCase):
     def test_eqiv_true_false(self):
         self.assertTrue(eqiv(IN_BOOLEAN_VALUES_TRUE_FALSE))
 
+    def test_eqiv_true_odd(self):
+        self.assertTrue(eqiv(IN_BOOLEAN_VALUES_TRUE_ODD))
+
+    def test_eqiv_false_odd(self):
+        self.assertFalse(eqiv(IN_BOOLEAN_VALUES_FALSE_ODD))
+
+    def test_eqiv_true_false_odd(self):
+        self.assertTrue(eqiv(IN_BOOLEAN_VALUES_TRUE_FALSE_ODD))
 
 Gene = Region.Gene
 COORDS = {'asedf':Gene((1,10),1,1),
@@ -45,7 +56,6 @@ COORD = (5, 15)
 FULL_MATCH = (5, 15)
 LOWER_MATCH = (10, 20)
 UPPER_MATCH = (1, 10)
-
 
 class TestRegion(unittest.TestCase):
     """Tests for Region Class"""
@@ -72,9 +82,6 @@ class TestRegion(unittest.TestCase):
         self.assertTrue(match.upper)
         self.assertEqual(FULL_MATCH_BINARY, match.value.location)
         self.assertEqual(1, match.index)
-
-
-
 
 if __name__ == '__main__':
     test_classes = (TestEqiv, TestRegionMap, TestRegion)

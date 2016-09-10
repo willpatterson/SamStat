@@ -17,31 +17,32 @@ class TestRegionMap(unittest.TestCase):
     '''
     pass
 
-IN_BOOLEAN_VALUES_TRUE = [True, True, True, True]
-IN_BOOLEAN_VALUES_FALSE = [False, True, True, True]
-IN_BOOLEAN_VALUES_TRUE_FALSE = [False, True, True, False]
-IN_BOOLEAN_VALUES_TRUE_ODD = [True, True, True]
-IN_BOOLEAN_VALUES_FALSE_ODD = [False, True, True]
-IN_BOOLEAN_VALUES_TRUE_FALSE_ODD = [False, True, False]
+BOOLEAN_VALUES_TRUE = [True, True, True, True]
+BOOLEAN_VALUES_FALSE = [False, True, True, True]
+BOOLEAN_VALUES_TRUE_FALSE = [False, True, True, False]
+BOOLEAN_VALUES_TRUE_ODD = [True, True, True]
+BOOLEAN_VALUES_FALSE_ODD = [False, True, True]
+BOOLEAN_VALUES_TRUE_FALSE_ODD = [False, True, False]
+
 class TestEqiv(unittest.TestCase):
     def test_eqiv_true(self):
         """Tests the eqiv function with all trues"""
-        self.assertTrue(eqiv(IN_BOOLEAN_VALUES_TRUE))
+        self.assertTrue(eqiv(BOOLEAN_VALUES_TRUE))
 
     def test_eqiv_false(self):
-        self.assertFalse(eqiv(IN_BOOLEAN_VALUES_FALSE))
+        self.assertFalse(eqiv(BOOLEAN_VALUES_FALSE))
 
     def test_eqiv_true_false(self):
-        self.assertTrue(eqiv(IN_BOOLEAN_VALUES_TRUE_FALSE))
+        self.assertTrue(eqiv(BOOLEAN_VALUES_TRUE_FALSE))
 
     def test_eqiv_true_odd(self):
-        self.assertTrue(eqiv(IN_BOOLEAN_VALUES_TRUE_ODD))
+        self.assertTrue(eqiv(BOOLEAN_VALUES_TRUE_ODD))
 
     def test_eqiv_false_odd(self):
-        self.assertFalse(eqiv(IN_BOOLEAN_VALUES_FALSE_ODD))
+        self.assertFalse(eqiv(BOOLEAN_VALUES_FALSE_ODD))
 
     def test_eqiv_true_false_odd(self):
-        self.assertTrue(eqiv(IN_BOOLEAN_VALUES_TRUE_FALSE_ODD))
+        self.assertTrue(eqiv(BOOLEAN_VALUES_TRUE_FALSE_ODD))
 
 Gene = Region.Gene
 COORDS = {'asedf':Gene((1,10),1,1),

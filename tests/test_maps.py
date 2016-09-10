@@ -24,6 +24,9 @@ BOOLEANS_TRUE_ODD = [True, True, True]
 BOOLEANS_FALSE_ODD = [False, True, True]
 BOOLEANS_TRUE_FALSE_ODD = [False, True, False]
 
+SINGLE_BOOLEAN_TRUE = True
+SINGLE_BOOLEAN_FALSE = False
+
 class TestEqiv(unittest.TestCase):
     def test_eqiv_true(self):
         """Tests the eqiv function with all trues"""
@@ -43,6 +46,12 @@ class TestEqiv(unittest.TestCase):
 
     def test_eqiv_true_false_odd(self):
         self.assertTrue(eqiv(BOOLEANS_TRUE_FALSE_ODD))
+
+    def test_eqiv_single_true(self):
+        self.assertTrue(eqiv(SINGLE_BOOLEAN_TRUE))
+
+    def test_eqiv_single_false(self):
+        self.assertFalse(eqiv(SINGLE_BOOLEAN_FALSE))
 
 Gene = Region.Gene
 COORDS = {'asedf':Gene((1,10),1,1),

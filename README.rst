@@ -18,12 +18,14 @@ Install:
 --------
 
 **requires python3**
+Developled using Python 3.4.1
 
 ::
 
   git clone https://github.com/willpatterson/SamStat.git
   cd SamStat
   python setup.py install
+
 
 Usage:
 ------

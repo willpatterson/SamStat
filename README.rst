@@ -4,15 +4,20 @@ SamStat
 
 SamStat is a custom toolkit used in a bioinformatics pipeline.
 
+QNAME Statistics:
+-----------------
 
-The `qstat` script preforms the following operations on QNAMES from a SAM file:
+``qstat`` preforms the following operations on QNAMES from a SAM file:
 
 1. Number of lines per QNAME
 2. Number of unquie RNAMEs per QNAME
 3. Range of RNAMEs per QNAME
-4. Link attribute type of sequences using a corresponding GFF3 file from the same dataset
+4. Find feature classification (exonic, intronic, intergenetic, combination) of alignments using a GFF3 file
 
-The `truedir` deduces the true direction of each sequence per-RNAME for every QNAME in a SAM file using a GFF3 file
+True Direction (``truedir``):
+-----------------------------
+
+``truedir`` deduces the true direction of each sequence per-RNAME for every QNAME in a SAM file using a GFF3 file
 
 Install:
 --------
